@@ -7,15 +7,15 @@ import (
 	iris "github.com/kataras/iris/v12"
 )
 
-type Router struct{}
+type InternalRouter struct{}
 
-func (r *Router) Route(i *iris.Application) {
+func (r *InternalRouter) Route(i *iris.Application) {
 	waterTankAPI := i.Party("/v1/water-tank")
 
 	i.Handle("ALL", "/*", func(ctx iris.Context) {
 		ctx.StatusCode(iris.StatusNotFound)
 
-		responseError := controllers.NewControllerError(controllers.NetStatNotFound, "Route not found")
+		responseError := controllers.NewControllerError(controllers.WaterTankNotFound, "Route not found")
 		ctx.JSON(responseError)
 	})
 
@@ -25,7 +25,7 @@ func (r *Router) Route(i *iris.Application) {
 		return
 	})
 
-	waterTankAPI.Get("/:tank", callbacks.Get)
-	waterTankAPI.Get("/:group", callbacks.GetAll)
+	waterTankAPI.Post("/", callbacks.Post)
+	waterTankAPI.Patch("/:name", callbacks.Patch)
 
 }

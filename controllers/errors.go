@@ -1,9 +1,11 @@
 package controllers
 
 var (
-	NetStatOK                  = "NETSTAT_200"
-	NetStatNotFound            = "NETSTAT_404"
-	NetStatInternalServerError = "NETSTAT_500"
+	WaterTankOK                  = "WATERTANK_200"
+	WaterTankNotFound            = "WATERTANK_404"
+	WaterTankBadRequest          = "WATERTANK_400"
+	WaterTankInvalidRequest      = "WATERTANK_422"
+	WaterTankInternalServerError = "WATERTANK_500"
 )
 
 type ControllerResponse struct {
