@@ -27,5 +27,6 @@ func (r *ExternalRouter) Route(i *iris.Application) {
 
 	waterTankAPI.Get("/:tank", callbacks.Get)
 	waterTankAPI.Get("/:group", callbacks.GetAll)
+	waterTankAPI.Get("/", callbacks.GetAll)
 
 }

@@ -6,6 +6,8 @@ import (
 	"water-tank-api/core/usecases"
 )
 
+const ALL_GROUPS = "ALL"
+
 type GetGroupWaterTank struct {
 	tank data.WaterTankData
 }
@@ -17,6 +19,10 @@ func NewGetGroupWaterTank(tank data.WaterTankData) *GetGroupWaterTank {
 }
 
 func (conn *GetGroupWaterTank) Get(name string) (response *WaterTankGroupState, err usecases.UsecaseErrorStack) {
+	if name == "" {
+		name = ALL_GROUPS
+	}
+
 	states, entityErr := conn.tank.GetDataByGroup(name)
 
 	if entityErr != nil {
