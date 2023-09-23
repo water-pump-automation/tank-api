@@ -11,8 +11,9 @@ const (
 type Capacity float32
 
 type WaterTankState struct {
-	TankState         State
+	Name              string
 	MaximumCapacity   Capacity
+	TankState         State
 	CurrentWaterLevel Capacity
 	Water             *Water
 }

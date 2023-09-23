@@ -27,5 +27,4 @@ func (r *InternalRouter) Route(i *iris.Application) {
 
 	waterTankAPI.Post("/", callbacks.Post)
 	waterTankAPI.Patch("/:name", callbacks.Patch)
-
 }

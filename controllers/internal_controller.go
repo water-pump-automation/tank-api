@@ -14,7 +14,7 @@ func NewInternalController(tank data.WaterTankData) *InternalController {
 	}
 }
 
-func (controller *InternalController) Create(tank string) (response *ControllerResponse, err error) {
+func (controller *InternalController) Create(tank string, capacity data.Capacity) (response *ControllerResponse, err error) {
 	return
 }
 
