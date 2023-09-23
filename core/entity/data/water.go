@@ -15,3 +15,9 @@ type Water struct {
 	Reason      string
 	Temperature Temperature
 }
+
+type WaterData interface {
+	RegisterWaterStats(waterTankName string, stats *Water) (err error)
+	UpdateWaterStats(waterTankName string, stats *Water) (err error)
+	GetWaterStats(waterTankName string) (state *WaterTankState, err error)
+}
