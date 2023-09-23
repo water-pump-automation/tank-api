@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"water-tank-api/core/entity/data"
-
-	"github.com/fatih/structs"
+	create_tank "water-tank-api/core/usecases/create"
+	update_tank "water-tank-api/core/usecases/update"
 )
 
 type InternalController struct {
@@ -16,15 +16,15 @@ func NewInternalController(tank data.WaterTankData) *InternalController {
 	}
 }
 
-func (controller *InternalController) Create(tank string, capacity data.Capacity) (response *ControllerResponse, err error) {
+func (controller *InternalController) Create(tank string, group string, capacity data.Capacity) (response *ControllerResponse, err error) {
 	create := create_tank.NewWaterTank(controller.tank)
 
-	usecaseResponse, usecaseErr := create.Create(tank, capacity)
+	usecaseErr := create.Create(tank, group, capacity)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
 		case nil:
-			response = NewControllerError(WaterTankBadRequest, usecaseErr.UsecaseError().Error())
+			response = NewControllerError(WaterTankInvalidRequest, usecaseErr.UsecaseError().Error())
 			break
 		default:
 			response = NewControllerError(WaterTankInternalServerError, usecaseErr.UsecaseError().Error())
@@ -35,19 +35,19 @@ func (controller *InternalController) Create(tank string, capacity data.Capacity
 		return
 	}
 
-	response = NewControllerResponse(WaterTankOK, structs.Map(usecaseResponse))
+	response = NewControllerResponse(WaterTankNoContent, map[string]interface{}{})
 
 	return
 }
 
 func (controller *InternalController) Update(tank string, currentLevel data.Capacity) (response *ControllerResponse, err error) {
-	update := update_tank.NewWaterTank(controller.tank)
+	update := update_tank.NewWaterTankUpdate(controller.tank)
 
-	usecaseResponse, usecaseErr := update.Update(tank, currentLevel)
+	usecaseErr, foundErr := update.Update(tank, currentLevel)
 
-	if tank == "" {
-		response = NewControllerError(WaterTankBadRequest, usecaseErr.UsecaseError().Error())
-		err = WaterTankEmptyNameError
+	if foundErr != nil {
+		response = NewControllerError(WaterTankNotFound, foundErr.Error())
+		err = foundErr
 		return
 	}
 
@@ -65,7 +65,7 @@ func (controller *InternalController) Update(tank string, currentLevel data.Capa
 		return
 	}
 
-	response = NewControllerResponse(WaterTankOK, structs.Map(usecaseResponse))
+	response = NewControllerResponse(WaterTankNoContent, map[string]interface{}{})
 
 	return
 }

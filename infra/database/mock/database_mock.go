@@ -17,10 +17,10 @@ func (*WaterTankMockData) GetDataByGroup(groups ...string) (state []*data.WaterT
 	return
 }
 
-func (*WaterTankMockData) CreateWaterTank(name string, group string) (err error) {
+func (*WaterTankMockData) CreateWaterTank(name string, group string, capacity data.Capacity) (err error) {
 	return
 }
 
-func (*WaterTankMockData) UpdateWaterTankState(name string, waterLevel *data.Capacity) (state *data.WaterTankState, err error) {
+func (*WaterTankMockData) UpdateWaterTankState(name string, waterLevel data.Capacity) (state *data.WaterTankState, err error) {
 	return
 }

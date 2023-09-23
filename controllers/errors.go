@@ -4,6 +4,7 @@ import "errors"
 
 var (
 	WaterTankOK                  = "WATERTANK_200"
+	WaterTankNoContent           = "NETSTAT_204"
 	WaterTankNotFound            = "WATERTANK_404"
 	WaterTankBadRequest          = "WATERTANK_400"
 	WaterTankInvalidRequest      = "WATERTANK_422"

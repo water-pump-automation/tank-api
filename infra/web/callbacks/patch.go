@@ -45,6 +45,6 @@ func Patch(ctx iris.Context) {
 		return
 	}
 
-	ctx.StatusCode(iris.StatusOK)
+	ctx.StatusCode(iris.StatusNoContent)
 	ctx.JSON(response)
 }
