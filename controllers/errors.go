@@ -1,11 +1,17 @@
 package controllers
 
+import "errors"
+
 var (
 	WaterTankOK                  = "WATERTANK_200"
 	WaterTankNotFound            = "WATERTANK_404"
 	WaterTankBadRequest          = "WATERTANK_400"
 	WaterTankInvalidRequest      = "WATERTANK_422"
 	WaterTankInternalServerError = "WATERTANK_500"
+)
+
+var (
+	WaterTankEmptyNameError = errors.New("Bad request. Name cannot be empty")
 )
 
 type ControllerResponse struct {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"water-tank-api/controllers"
@@ -21,8 +20,7 @@ import (
 )
 
 var (
-	port  = kingpin.Flag("port", "Server's port").Short('p').Default("8080").Envar("SERVER_PORT").Int()
-	route = kingpin.Flag("vport", "Internal or External route").Short('r').Default("external").Envar("SERVER_ROUTE").String()
+	port = kingpin.Flag("port", "Server's port").Short('p').Default("8080").Envar("SERVER_PORT").Int()
 )
 
 func main() {
@@ -34,24 +32,10 @@ func main() {
 	logs.SetLogger(stdout.NewSTDOutLogger())
 
 	app := iris.New()
+	internalRouter := routes.InternalRouter{}
 
-	internalRouter := routes.ExternalRouter{}
-	externalRouter := routes.InternalRouter{}
-
-	switch r := strings.ToUpper(*route); r {
-	case "INTERNAL":
-		internalRouter.Route(app)
-		web.SetControllers(controllers.NewInternalController(database_mock.NewWaterTankMockData()), nil)
-		break
-	case "EXTERNAL":
-		web.SetControllers(nil, controllers.NewExternalController(database_mock.NewWaterTankMockData()))
-		externalRouter.Route(app)
-		break
-	default:
-		web.SetControllers(nil, controllers.NewExternalController(database_mock.NewWaterTankMockData()))
-		externalRouter.Route(app)
-		break
-	}
+	internalRouter.Route(app)
+	web.SetControllers(controllers.NewInternalController(database_mock.NewWaterTankMockData()), nil)
 
 	go func() {
 		if err := app.Run(iris.Addr(fmt.Sprintf(":%d", *port))); err != nil {

@@ -1,6 +1,9 @@
 version: '2'
 
 services:
-  water-tank-api-v1:
-    build: .
-    image: lo-han/water-tank-api:latest
+  water-tank-api-internal-v1:
+    build: deploy/internal
+    image: lo-han/water-tank-api-internal:latest
+  water-tank-api-external-v1:
+    build: deploy/external
+    image: lo-han/water-tank-api-external:latest

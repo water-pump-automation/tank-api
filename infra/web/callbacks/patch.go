@@ -14,10 +14,11 @@ type PatchBody struct {
 }
 
 func Patch(ctx iris.Context) {
-	var body PostBody
+	var body PatchBody
 
 	controller := web.InternalController()
 
+	tankName := ctx.Params().Get("name")
 	bodyBytes, _ := ctx.GetBody()
 
 	err := json.Unmarshal(bodyBytes, &body)
@@ -29,7 +30,7 @@ func Patch(ctx iris.Context) {
 		return
 	}
 
-	response, err := controller.Create(body.Name, body.MaximumCapacity)
+	response, err := controller.Update(tankName, body.CurrentWaterLevel)
 
 	if err != nil {
 		switch response.Code {
