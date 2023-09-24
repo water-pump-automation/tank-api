@@ -21,6 +21,6 @@ type WaterTankState struct {
 type WaterTankData interface {
 	CreateWaterTank(name string, group string, capacity Capacity) (err error)
 	UpdateWaterTankState(name string, waterLevel Capacity) (state *WaterTankState, err error)
-	GetDataByName(names ...string) (state *WaterTankState, err error)
-	GetDataByGroup(groups ...string) (state []*WaterTankState, err error)
+	GetWaterTankState(names ...string) (state *WaterTankState, err error)
+	GetTankGroupState(groups ...string) (state []*WaterTankState, err error)
 }

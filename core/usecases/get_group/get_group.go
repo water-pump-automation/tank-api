@@ -23,7 +23,7 @@ func (conn *GetGroupWaterTank) Get(name string) (response *WaterTankGroupState, 
 		name = ALL_GROUPS
 	}
 
-	states, entityErr := conn.tank.GetDataByGroup(name)
+	states, entityErr := conn.tank.GetTankGroupState(name)
 
 	if entityErr != nil {
 		err.Append(entityErr)

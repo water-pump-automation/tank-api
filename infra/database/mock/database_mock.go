@@ -9,11 +9,11 @@ func NewWaterTankMockData() *WaterTankMockData {
 	return &WaterTankMockData{}
 }
 
-func (*WaterTankMockData) GetDataByName(names ...string) (state *data.WaterTankState, err error) {
+func (*WaterTankMockData) GetWaterTankState(names ...string) (state *data.WaterTankState, err error) {
 	return
 }
 
-func (*WaterTankMockData) GetDataByGroup(groups ...string) (state []*data.WaterTankState, err error) {
+func (*WaterTankMockData) GetTankGroupState(groups ...string) (state []*data.WaterTankState, err error) {
 	return
 }
 

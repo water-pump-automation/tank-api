@@ -17,7 +17,7 @@ func NewGetWaterTank(tank data.WaterTankData) *GetWaterTank {
 }
 
 func (conn *GetWaterTank) Get(name string) (response *WaterTankState, err usecases.UsecaseErrorStack) {
-	state, entityErr := conn.tank.GetDataByName(name)
+	state, entityErr := conn.tank.GetWaterTankState(name)
 
 	if entityErr != nil {
 		err.Append(entityErr)
