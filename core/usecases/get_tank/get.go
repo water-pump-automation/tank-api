@@ -17,6 +17,12 @@ func NewGetWaterTank(tank data.WaterTankData) *GetWaterTank {
 	}
 }
 
+func (conn *GetWaterTank) GetCapacity(tank string) (MaximumCapacity water_tank.Capacity, err stack.ErrorStack) {
+	state, err := conn.Get(tank)
+
+	return state.Tank.MaximumCapacity, err
+}
+
 func (conn *GetWaterTank) Get(name string) (response *WaterTankState, err stack.ErrorStack) {
 	var state *water_tank.WaterTankState
 

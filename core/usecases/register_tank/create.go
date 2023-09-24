@@ -4,11 +4,12 @@ import (
 	stack "water-tank-api/core/entity/error_stack"
 	data "water-tank-api/core/entity/water_tank"
 	get_tank "water-tank-api/core/usecases/get_tank"
+	"water-tank-api/core/usecases/tank"
 )
 
 type WaterTank struct {
 	tank       data.WaterTankData
-	getUsecase *get_tank.GetWaterTank
+	getUsecase tank.Tank
 }
 
 func NewWaterTank(tank data.WaterTankData) *WaterTank {
@@ -19,7 +20,7 @@ func NewWaterTank(tank data.WaterTankData) *WaterTank {
 }
 
 func (conn *WaterTank) Create(tank string, group string, capacity data.Capacity) (err stack.ErrorStack) {
-	_, err = conn.getUsecase.Get(tank)
+	_, err = conn.getUsecase.GetCapacity(tank)
 
 	if err.HasError() {
 		err.Append(WaterTankAlreadyExists)

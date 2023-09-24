@@ -2,26 +2,28 @@ package update_tank_state
 
 import (
 	stack "water-tank-api/core/entity/error_stack"
+	"water-tank-api/core/entity/water_tank"
 	data "water-tank-api/core/entity/water_tank"
 	get_tank "water-tank-api/core/usecases/get_tank"
+	"water-tank-api/core/usecases/tank"
 )
 
 type UpdateWaterTank struct {
-	tank       data.WaterTankData
-	getUsecase *get_tank.GetWaterTank
+	tank     data.WaterTankData
+	capacity tank.Tank
 }
 
 func NewWaterTankUpdate(tank data.WaterTankData) *UpdateWaterTank {
 	return &UpdateWaterTank{
-		tank:       tank,
-		getUsecase: get_tank.NewGetWaterTank(tank),
+		tank:     tank,
+		capacity: get_tank.NewGetWaterTank(tank),
 	}
 }
 
 func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (err stack.ErrorStack) {
-	var tankState *get_tank.WaterTankState
+	var maximumCapacity water_tank.Capacity
 
-	tankState, err = conn.getUsecase.Get(tank)
+	maximumCapacity, err = conn.capacity.GetCapacity(tank)
 
 	if err.HasError() {
 		if entity := err.EntityError(); entity != nil {
@@ -33,7 +35,7 @@ func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (er
 		return
 	}
 
-	if currentLevel > tankState.Tank.MaximumCapacity {
+	if currentLevel > maximumCapacity {
 		err.Append(WaterTankCurrentWaterLevelBiggerThanMax)
 		return
 	}
