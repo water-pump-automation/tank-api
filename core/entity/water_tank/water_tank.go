@@ -1,6 +1,9 @@
 package water_tank
 
-import "water-tank-api/core/entity/water"
+import (
+	stack "water-tank-api/core/entity/error_stack"
+	"water-tank-api/core/entity/water"
+)
 
 type State int
 
@@ -21,8 +24,8 @@ type WaterTankState struct {
 }
 
 type WaterTankData interface {
-	CreateWaterTank(name string, group string, capacity Capacity) (err error)
-	UpdateWaterTankState(name string, waterLevel Capacity) (state *WaterTankState, err error)
-	GetWaterTankState(names ...string) (state *WaterTankState, err error)
-	GetTankGroupState(groups ...string) (state []*WaterTankState, err error)
+	CreateWaterTank(name string, group string, capacity Capacity) (err stack.ErrorStack)
+	UpdateWaterTankState(name string, waterLevel Capacity) (state *WaterTankState, err stack.ErrorStack)
+	GetWaterTankState(names ...string) (state *WaterTankState, err stack.ErrorStack)
+	GetTankGroupState(groups ...string) (state []*WaterTankState, err stack.ErrorStack)
 }

@@ -3,6 +3,7 @@ package get_group
 import (
 	"time"
 	stack "water-tank-api/core/entity/error_stack"
+	"water-tank-api/core/entity/water_tank"
 	data "water-tank-api/core/entity/water_tank"
 )
 
@@ -19,25 +20,25 @@ func NewGetGroupWaterTank(tank data.WaterTankData) *GetGroupWaterTank {
 }
 
 func (conn *GetGroupWaterTank) Get(name string) (response *WaterTankGroupState, err stack.ErrorStack) {
+	var state []*water_tank.WaterTankState
+
 	if name == "" {
 		name = ALL_GROUPS
 	}
 
-	states, entityErr := conn.tank.GetTankGroupState(name)
+	state, err = conn.tank.GetTankGroupState(name)
 
-	if entityErr != nil {
-		err.Append(entityErr)
-		err.Append(WaterTankErrorServerError(entityErr.Error()))
+	if err.HasError() {
+		err.Append(WaterTankErrorServerError(err.EntityError().Error()))
 		return
 	}
 
-	if len(states) == 0 {
-		err.Append(nil)
+	if len(state) == 0 {
 		err.Append(WaterTankErrorGroupNotFound(name))
 		return
 	}
 
-	response.Tank = states
+	response.Tank = state
 	response.Datetime = time.Now()
 	return
 }

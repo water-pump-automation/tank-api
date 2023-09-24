@@ -18,37 +18,35 @@ func NewWaterTankUpdate(tank data.WaterTankData) *UpdateWaterTank {
 	}
 }
 
-func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (errStack stack.ErrorStack, foundErr error) {
-	tankState, getErr := conn.getUsecase.Get(tank)
+func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (err stack.ErrorStack) {
+	var tankState *get_tank.WaterTankState
 
-	if getErr.HasError() {
-		if errStack.EntityError() != nil {
-			errStack.Append(getErr.EntityError())
-			errStack.Append(getErr.UsecaseError())
+	tankState, err = conn.getUsecase.Get(tank)
+
+	if err.HasError() {
+		if entity := err.EntityError(); entity != nil {
+			err.Append(WaterTankErrorServerError(entity.Error()))
 			return
 		}
 
-		foundErr = errStack.UsecaseError()
+		err.Append(WaterTankErrorNotFound(err.UsecaseError().Error()))
 		return
 	}
 
 	if currentLevel > tankState.Tank.MaximumCapacity {
-		errStack.Append(nil)
-		errStack.Append(WaterTankCurrentWaterLevelBiggerThanMax)
+		err.Append(WaterTankCurrentWaterLevelBiggerThanMax)
 		return
 	}
 
 	if currentLevel < 0 {
-		errStack.Append(nil)
-		errStack.Append(WaterTankCurrentWaterLevelSmallerThanZero)
+		err.Append(WaterTankCurrentWaterLevelSmallerThanZero)
 		return
 	}
 
 	_, updateErr := conn.tank.UpdateWaterTankState(tank, currentLevel)
 
-	if updateErr != nil {
-		errStack.Append(updateErr)
-		errStack.Append(WaterTankErrorServerError(updateErr.Error()))
+	if updateErr.HasError() {
+		err.Append(WaterTankErrorServerError(updateErr.EntityError().Error()))
 	}
 
 	return

@@ -1,5 +1,7 @@
 package water
 
+import stack "water-tank-api/core/entity/error_stack"
+
 type WaterQuality int
 
 type Temperature string
@@ -17,7 +19,7 @@ type Water struct {
 }
 
 type WaterData interface {
-	RegisterWaterStats(waterTankName string, stats *Water) (err error)
-	UpdateWaterStats(waterTankName string, stats *Water) (err error)
-	GetWaterStats(waterTankName string) (state *Water, err error)
+	RegisterWaterStats(waterTankName string, stats *Water) (err stack.ErrorStack)
+	UpdateWaterStats(waterTankName string, stats *Water) (err stack.ErrorStack)
+	GetWaterStats(waterTankName string) (state *Water, err stack.ErrorStack)
 }

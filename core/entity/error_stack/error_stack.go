@@ -8,7 +8,8 @@ type _err struct {
 }
 
 type ErrorStack struct {
-	errors map[string]_err
+	errors        map[string]_err
+	usecaseErrors int
 }
 
 func (stack *ErrorStack) HasError() bool {
@@ -23,10 +24,9 @@ func (stack *ErrorStack) Append(err error) {
 	var layer string
 	if len(stack.errors) == 0 {
 		layer = "entity"
-	} else if len(stack.errors) == 1 {
-		layer = "usecase"
-	} else {
-		layer = fmt.Sprintf("layer_%d", len(stack.errors)-1)
+	} else if len(stack.errors) > 0 {
+		layer = fmt.Sprintf("usecase_%d", stack.usecaseErrors)
+		stack.usecaseErrors++
 	}
 
 	stack.errors[layer] = _err{
@@ -44,7 +44,20 @@ func (stack *ErrorStack) EntityError() (err error) {
 }
 
 func (stack *ErrorStack) UsecaseError() (err error) {
-	if stackErr, exists := stack.errors["usecase"]; exists {
+	usecase := fmt.Sprintf("usecase_%d", stack.usecaseErrors)
+	if stackErr, exists := stack.errors[usecase]; exists {
+		return stackErr.err
+	}
+
+	return nil
+}
+
+func (stack *ErrorStack) PopUsecaseError() (err error) {
+	usecase := fmt.Sprintf("usecase_%d", stack.usecaseErrors)
+
+	if stackErr, exists := stack.errors[usecase]; exists {
+		delete(stack.errors, usecase)
+		stack.usecaseErrors--
 		return stackErr.err
 	}
 

@@ -18,38 +18,33 @@ func NewWaterTank(tank data.WaterTankData) *WaterTank {
 	}
 }
 
-func (conn *WaterTank) Create(tank string, group string, capacity data.Capacity) (errStack stack.ErrorStack) {
-	tankState, _ := conn.getUsecase.Get(tank)
+func (conn *WaterTank) Create(tank string, group string, capacity data.Capacity) (err stack.ErrorStack) {
+	_, err = conn.getUsecase.Get(tank)
 
-	if tankState != nil {
-		errStack.Append(nil)
-		errStack.Append(WaterTankAlreadyExists)
+	if err.HasError() {
+		err.Append(WaterTankAlreadyExists)
 		return
 	}
 
 	if capacity < 0 {
-		errStack.Append(nil)
-		errStack.Append(WaterTankMaximumCapacitySmallerThanZero)
+		err.Append(WaterTankMaximumCapacitySmallerThanZero)
 		return
 	}
 
 	if tank == "" {
-		errStack.Append(nil)
-		errStack.Append(WaterTankInvalidName)
+		err.Append(WaterTankInvalidName)
 		return
 	}
 
 	if group == "" {
-		errStack.Append(nil)
-		errStack.Append(WaterTankInvalidGroup)
+		err.Append(WaterTankInvalidGroup)
 		return
 	}
 
 	createErr := conn.tank.CreateWaterTank(tank, group, capacity)
 
-	if createErr != nil {
-		errStack.Append(createErr)
-		errStack.Append(WaterTankErrorServerError(createErr.Error()))
+	if createErr.HasError() {
+		err.Append(WaterTankErrorServerError(createErr.EntityError().Error()))
 	}
 
 	return

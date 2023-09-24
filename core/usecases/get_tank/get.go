@@ -3,6 +3,7 @@ package get_tank
 import (
 	"time"
 	stack "water-tank-api/core/entity/error_stack"
+	"water-tank-api/core/entity/water_tank"
 	data "water-tank-api/core/entity/water_tank"
 )
 
@@ -17,16 +18,16 @@ func NewGetWaterTank(tank data.WaterTankData) *GetWaterTank {
 }
 
 func (conn *GetWaterTank) Get(name string) (response *WaterTankState, err stack.ErrorStack) {
-	state, entityErr := conn.tank.GetWaterTankState(name)
+	var state *water_tank.WaterTankState
 
-	if entityErr != nil {
-		err.Append(entityErr)
-		err.Append(WaterTankErrorServerError(entityErr.Error()))
+	state, err = conn.tank.GetWaterTankState(name)
+
+	if err.HasError() {
+		err.Append(WaterTankErrorServerError(err.EntityError().Error()))
 		return
 	}
 
 	if state == nil {
-		err.Append(nil)
 		err.Append(WaterTankErrorNotFound(name))
 		return
 	}

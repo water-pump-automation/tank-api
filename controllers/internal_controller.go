@@ -43,18 +43,20 @@ func (controller *InternalController) Create(tank string, group string, capacity
 func (controller *InternalController) Update(tank string, currentLevel data.Capacity) (response *ControllerResponse, err error) {
 	update := update_tank_state.NewWaterTankUpdate(controller.tank)
 
-	usecaseErr, foundErr := update.Update(tank, currentLevel)
-
-	if foundErr != nil {
-		response = NewControllerError(WaterTankNotFound, foundErr.Error())
-		err = foundErr
-		return
-	}
+	usecaseErr := update.Update(tank, currentLevel)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
 		case nil:
-			response = NewControllerError(WaterTankInvalidRequest, usecaseErr.UsecaseError().Error())
+			firstUsecaseError := usecaseErr.PopUsecaseError()
+			secondUsecaseError := usecaseErr.PopUsecaseError()
+
+			if secondUsecaseError == nil {
+				response = NewControllerError(WaterTankNotFound, firstUsecaseError.Error())
+				return
+			}
+
+			response = NewControllerError(WaterTankInvalidRequest, secondUsecaseError.Error())
 			break
 		default:
 			response = NewControllerError(WaterTankInternalServerError, usecaseErr.UsecaseError().Error())
