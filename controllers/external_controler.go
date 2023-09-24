@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"water-tank-api/core/entity/data"
+	data "water-tank-api/core/entity/water_tank"
 	"water-tank-api/core/usecases/get_group"
 	get_tank "water-tank-api/core/usecases/get_tank"
 

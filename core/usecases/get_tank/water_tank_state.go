@@ -2,7 +2,7 @@ package get_tank
 
 import (
 	"time"
-	"water-tank-api/core/entity/data"
+	data "water-tank-api/core/entity/water_tank"
 )
 
 type WaterTankState struct {

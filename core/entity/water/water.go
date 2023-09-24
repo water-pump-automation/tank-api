@@ -1,4 +1,4 @@
-package data
+package water
 
 type WaterQuality int
 
@@ -19,5 +19,5 @@ type Water struct {
 type WaterData interface {
 	RegisterWaterStats(waterTankName string, stats *Water) (err error)
 	UpdateWaterStats(waterTankName string, stats *Water) (err error)
-	GetWaterStats(waterTankName string) (state *WaterTankState, err error)
+	GetWaterStats(waterTankName string) (state *Water, err error)
 }

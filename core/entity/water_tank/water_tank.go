@@ -1,4 +1,6 @@
-package data
+package water_tank
+
+import "water-tank-api/core/entity/water"
 
 type State int
 
@@ -15,7 +17,7 @@ type WaterTankState struct {
 	MaximumCapacity   Capacity
 	TankState         State
 	CurrentWaterLevel Capacity
-	Water             *Water
+	Water             *water.Water
 }
 
 type WaterTankData interface {

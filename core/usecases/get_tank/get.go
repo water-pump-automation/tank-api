@@ -2,8 +2,8 @@ package get_tank
 
 import (
 	"time"
-	"water-tank-api/core/entity/data"
-	"water-tank-api/core/usecases"
+	stack "water-tank-api/core/entity/error_stack"
+	data "water-tank-api/core/entity/water_tank"
 )
 
 type GetWaterTank struct {
@@ -16,7 +16,7 @@ func NewGetWaterTank(tank data.WaterTankData) *GetWaterTank {
 	}
 }
 
-func (conn *GetWaterTank) Get(name string) (response *WaterTankState, err usecases.UsecaseErrorStack) {
+func (conn *GetWaterTank) Get(name string) (response *WaterTankState, err stack.ErrorStack) {
 	state, entityErr := conn.tank.GetWaterTankState(name)
 
 	if entityErr != nil {

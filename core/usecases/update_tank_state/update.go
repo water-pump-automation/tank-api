@@ -1,8 +1,8 @@
 package update_tank_state
 
 import (
-	"water-tank-api/core/entity/data"
-	"water-tank-api/core/usecases"
+	stack "water-tank-api/core/entity/error_stack"
+	data "water-tank-api/core/entity/water_tank"
 	get_tank "water-tank-api/core/usecases/get_tank"
 )
 
@@ -18,7 +18,7 @@ func NewWaterTankUpdate(tank data.WaterTankData) *UpdateWaterTank {
 	}
 }
 
-func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (errStack usecases.UsecaseErrorStack, foundErr error) {
+func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (errStack stack.ErrorStack, foundErr error) {
 	tankState, getErr := conn.getUsecase.Get(tank)
 
 	if getErr.HasError() {

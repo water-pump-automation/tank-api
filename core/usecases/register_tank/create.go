@@ -1,8 +1,8 @@
 package register_tank
 
 import (
-	"water-tank-api/core/entity/data"
-	"water-tank-api/core/usecases"
+	stack "water-tank-api/core/entity/error_stack"
+	data "water-tank-api/core/entity/water_tank"
 	get_tank "water-tank-api/core/usecases/get_tank"
 )
 
@@ -18,7 +18,7 @@ func NewWaterTank(tank data.WaterTankData) *WaterTank {
 	}
 }
 
-func (conn *WaterTank) Create(tank string, group string, capacity data.Capacity) (errStack usecases.UsecaseErrorStack) {
+func (conn *WaterTank) Create(tank string, group string, capacity data.Capacity) (errStack stack.ErrorStack) {
 	tankState, _ := conn.getUsecase.Get(tank)
 
 	if tankState != nil {

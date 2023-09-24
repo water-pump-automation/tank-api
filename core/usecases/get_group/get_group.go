@@ -2,8 +2,8 @@ package get_group
 
 import (
 	"time"
-	"water-tank-api/core/entity/data"
-	"water-tank-api/core/usecases"
+	stack "water-tank-api/core/entity/error_stack"
+	data "water-tank-api/core/entity/water_tank"
 )
 
 const ALL_GROUPS = "ALL"
@@ -18,7 +18,7 @@ func NewGetGroupWaterTank(tank data.WaterTankData) *GetGroupWaterTank {
 	}
 }
 
-func (conn *GetGroupWaterTank) Get(name string) (response *WaterTankGroupState, err usecases.UsecaseErrorStack) {
+func (conn *GetGroupWaterTank) Get(name string) (response *WaterTankGroupState, err stack.ErrorStack) {
 	if name == "" {
 		name = ALL_GROUPS
 	}

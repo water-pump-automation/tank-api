@@ -1,6 +1,6 @@
 package database_mock
 
-import "water-tank-api/core/entity/data"
+import data "water-tank-api/core/entity/water_tank"
 
 type WaterTankMockData struct {
 }

@@ -3,7 +3,7 @@ package callbacks
 import (
 	"encoding/json"
 	"water-tank-api/controllers"
-	"water-tank-api/core/entity/data"
+	data "water-tank-api/core/entity/water_tank"
 	"water-tank-api/infra/web"
 
 	iris "github.com/kataras/iris/v12"
