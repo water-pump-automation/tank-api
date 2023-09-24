@@ -1,4 +1,4 @@
-package update_tank
+package update_tank_state
 
 import (
 	"errors"

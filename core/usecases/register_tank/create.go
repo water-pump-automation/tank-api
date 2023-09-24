@@ -1,9 +1,9 @@
-package create_tank
+package register_tank
 
 import (
 	"water-tank-api/core/entity/data"
 	"water-tank-api/core/usecases"
-	get_tank "water-tank-api/core/usecases/get"
+	get_tank "water-tank-api/core/usecases/get_tank"
 )
 
 type WaterTank struct {

@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"water-tank-api/core/entity/data"
-	get_tank "water-tank-api/core/usecases/get"
 	"water-tank-api/core/usecases/get_group"
+	get_tank "water-tank-api/core/usecases/get_tank"
 
 	"github.com/fatih/structs"
 )

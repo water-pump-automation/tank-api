@@ -1,9 +1,9 @@
-package update_tank
+package update_tank_state
 
 import (
 	"water-tank-api/core/entity/data"
 	"water-tank-api/core/usecases"
-	get_tank "water-tank-api/core/usecases/get"
+	get_tank "water-tank-api/core/usecases/get_tank"
 )
 
 type UpdateWaterTank struct {

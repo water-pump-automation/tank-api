@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"water-tank-api/core/entity/data"
-	create_tank "water-tank-api/core/usecases/create"
-	update_tank "water-tank-api/core/usecases/update"
+	register_tank "water-tank-api/core/usecases/register_tank"
+	update_tank_state "water-tank-api/core/usecases/update_tank_state"
 )
 
 type InternalController struct {
@@ -17,7 +17,7 @@ func NewInternalController(tank data.WaterTankData) *InternalController {
 }
 
 func (controller *InternalController) Create(tank string, group string, capacity data.Capacity) (response *ControllerResponse, err error) {
-	create := create_tank.NewWaterTank(controller.tank)
+	create := register_tank.NewWaterTank(controller.tank)
 
 	usecaseErr := create.Create(tank, group, capacity)
 
@@ -41,7 +41,7 @@ func (controller *InternalController) Create(tank string, group string, capacity
 }
 
 func (controller *InternalController) Update(tank string, currentLevel data.Capacity) (response *ControllerResponse, err error) {
-	update := update_tank.NewWaterTankUpdate(controller.tank)
+	update := update_tank_state.NewWaterTankUpdate(controller.tank)
 
 	usecaseErr, foundErr := update.Update(tank, currentLevel)
 

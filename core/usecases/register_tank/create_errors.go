@@ -1,4 +1,4 @@
-package create_tank
+package register_tank
 
 import (
 	"errors"
