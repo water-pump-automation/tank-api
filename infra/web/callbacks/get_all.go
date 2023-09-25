@@ -11,7 +11,7 @@ func GetAll(ctx iris.Context) {
 	controller := web.Controller()
 	groupName := ctx.Params().Get("group")
 
-	response, err := controller.GetAll(groupName)
+	response, err := controller.GetGroup(groupName)
 
 	if err != nil {
 		switch response.Code {

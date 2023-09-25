@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"water-tank-api/core/entity/access"
 	"water-tank-api/core/entity/logs"
 	data "water-tank-api/core/entity/water_tank"
 	"water-tank-api/core/usecases/get"
@@ -29,7 +30,7 @@ func (controller *Controller) Create(tank string, group string, capacity data.Ca
 
 	create := register_tank.NewWaterTank(controller.tank)
 
-	usecaseErr := create.Create(tank, group, capacity)
+	accessToken, usecaseErr := create.Create(tank, group, capacity)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
@@ -46,18 +47,19 @@ func (controller *Controller) Create(tank string, group string, capacity data.Ca
 		return
 	}
 
+	response = NewControllerCreateResponse(WaterTankOK, accessToken)
 	return
 }
 
-func (controller *Controller) Update(tank string, currentLevel data.Capacity) (response *ControllerResponse, err error) {
+func (controller *Controller) Update(tank string, group string, accessToken access.AccessToken, currentLevel data.Capacity) (response *ControllerResponse, err error) {
 	logs.Gateway().Info(
-		fmt.Sprintf("Updating '%s' tank's water level to %s",
-			tank, get.ConvertCapacityToLiters(currentLevel)),
+		fmt.Sprintf("Updating '%s' tank's, of group '%s', water level to %s",
+			tank, group, get.ConvertCapacityToLiters(currentLevel)),
 	)
 
 	update := update_tank_state.NewWaterTankUpdate(controller.tank)
 
-	usecaseErr := update.Update(tank, currentLevel)
+	usecaseErr := update.Update(tank, group, accessToken, currentLevel)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
@@ -89,10 +91,10 @@ func (controller *Controller) Update(tank string, currentLevel data.Capacity) (r
 	return
 }
 
-func (controller *Controller) Get(tank string) (response *ControllerResponse, err error) {
-	return controller.externalMethods.Get(tank)
+func (controller *Controller) Get(tank string, group string) (response *ControllerResponse, err error) {
+	return controller.externalMethods.Get(tank, group)
 }
 
-func (controller *Controller) GetAll(group string) (response *ControllerResponse, err error) {
-	return controller.externalMethods.GetAll(group)
+func (controller *Controller) GetGroup(group string) (response *ControllerResponse, err error) {
+	return controller.externalMethods.GetGroup(group)
 }

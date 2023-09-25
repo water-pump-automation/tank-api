@@ -2,6 +2,7 @@ package tank
 
 import (
 	"time"
+	"water-tank-api/core/entity/access"
 	stack "water-tank-api/core/entity/error_stack"
 	"water-tank-api/core/entity/water_tank"
 	data "water-tank-api/core/entity/water_tank"
@@ -18,17 +19,28 @@ func NewGetWaterTank(tank data.WaterTankData) *GetWaterTank {
 	}
 }
 
-func (conn *GetWaterTank) GetCapacity(tank string) (MaximumCapacity water_tank.Capacity, err stack.ErrorStack) {
-	state, err := conn.Get(tank)
+func (conn *GetWaterTank) GetData(tank string, group string) (MaximumCapacity water_tank.Capacity, accessToken access.AccessToken, err stack.ErrorStack) {
+	var state *water_tank.WaterTank
+	state, err = conn.tank.GetWaterTankState(group, tank)
 
-	return get.ConverLitersToCapacity(state.MaximumCapacity), err
+	if err.HasError() {
+		err.Append(WaterTankErrorServerError(err.EntityError().Error()))
+		return
+	}
+
+	if state == nil {
+		err.Append(WaterTankErrorNotFound(tank))
+		return
+	}
+
+	return state.MaximumCapacity, state.Access, err
 }
 
-func (conn *GetWaterTank) Get(name string) (response *get.WaterTankState, err stack.ErrorStack) {
+func (conn *GetWaterTank) Get(name string, group string) (response *get.WaterTankState, err stack.ErrorStack) {
 	response = new(get.WaterTankState)
 	var state *water_tank.WaterTank
 
-	state, err = conn.tank.GetWaterTankState(name)
+	state, err = conn.tank.GetWaterTankState(group, name)
 
 	if err.HasError() {
 		err.Append(WaterTankErrorServerError(err.EntityError().Error()))

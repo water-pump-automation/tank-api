@@ -1,10 +1,11 @@
 package register_tank
 
 import (
+	"water-tank-api/core/entity/access"
 	stack "water-tank-api/core/entity/error_stack"
 	data "water-tank-api/core/entity/water_tank"
 	get_tank "water-tank-api/core/usecases/get/tank"
-	"water-tank-api/core/usecases/tank"
+	tank "water-tank-api/core/usecases/get_data_interface"
 )
 
 type WaterTank struct {
@@ -19,8 +20,8 @@ func NewWaterTank(tank data.WaterTankData) *WaterTank {
 	}
 }
 
-func (conn *WaterTank) Create(tank string, group string, capacity data.Capacity) (err stack.ErrorStack) {
-	_, err = conn.getUsecase.GetCapacity(tank)
+func (conn *WaterTank) Create(tank string, group string, capacity data.Capacity) (accessToken access.AccessToken, err stack.ErrorStack) {
+	_, _, err = conn.getUsecase.GetData(tank, group)
 
 	if !err.HasError() {
 		err.Append(WaterTankAlreadyExists)
@@ -44,7 +45,9 @@ func (conn *WaterTank) Create(tank string, group string, capacity data.Capacity)
 		return
 	}
 
-	createErr := conn.tank.CreateWaterTank(tank, group, capacity)
+	accessToken = access.GenerateAccessToken()
+
+	createErr := conn.tank.CreateWaterTank(tank, group, accessToken, capacity)
 
 	if createErr.HasError() {
 		err.Append(WaterTankErrorServerError(createErr.EntityError().Error()))

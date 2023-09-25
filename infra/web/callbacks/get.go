@@ -11,7 +11,9 @@ func Get(ctx iris.Context) {
 	controller := web.Controller()
 	tankName := ctx.Params().Get("tank")
 
-	response, err := controller.Get(tankName)
+	groupName := ctx.Request().Header.Get("group")
+
+	response, err := controller.Get(tankName, groupName)
 
 	if err != nil {
 		switch response.Code {

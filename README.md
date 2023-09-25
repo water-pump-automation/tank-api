@@ -3,22 +3,24 @@ API for water tank's data management and water health monitoring (_not implement
 
 The API is divided into `Internal` and `External` endpoints.
 
-The `External` one are for read-only access, that is, to read tank's data, or a group of tanks.
-The supported attributes are:
+The `External` ones are read-only access to tank's data, or a group of tanks.
+The returned attributes are:
 
 - `Name`
 - `Group`
 - `MaximumCapacity`
 - `TankState`
+  - `Empty`
+  - `Filling`
+  - `Full`
 - `CurrentWaterLevel`
 - `LastFullTime`
 
-While the `Internal` supports all the `External` ones, plus the hability to register a new tank
-and update any water state, that are:
+While the `Internal` ones also expose all the `External`'s, plus the hability to register a new tank
+and update any water level.
 
-- `Empty`
-- `Filling`
-- `Full`
+In order to provide a new water state, it must be provided an `access_token`,
+working as a password to prevent other API users to do malicious or multiple modifications.
 
 ## Deploy options
 
@@ -70,6 +72,10 @@ The endpoints Postman's collection can be downloaded at [Water-tank-api [v1].pos
 - `Ok (200)`
 - `Not Found (404)`
 
+#### Request header
+
+- `group`
+
 #### Response example
 ``` json
 {
@@ -87,11 +93,10 @@ The endpoints Postman's collection can be downloaded at [Water-tank-api [v1].pos
 
 ### /v1/water-tank/group/:group [GET]
 
-> If no group is specific, it returns all tanks from all groups
-
 #### Response codes
 
 - `Ok (200)`
+- `Bad Request (400)`
 - `Not Found (404)`
 
 #### Response example
@@ -130,20 +135,25 @@ The endpoints Postman's collection can be downloaded at [Water-tank-api [v1].pos
 
 ### /v1/water-tank/ [POST]
 
-> The tank's name is unique, no matter what group it's associated. For that reason, it can not exists a 'TANK_1' for a 'GROUP_1' and 'GROUP_2' at the same, for example
-
 #### Response codes
 
-- `No Content (204)`
+- `Ok (200)`
 - `Bad Request (400)`
 - `Unprocessable Entity (422)`
 
-#### Request example
+#### Request body example
 ``` json
 {
     "name": "TANK_7",
     "group": "GROUP_2",
     "maximum_capacity": 45
+}
+```
+
+#### Response example
+``` json
+{
+    "access_token": "<ACCESS_TOKEN>"
 }
 ```
 
@@ -156,7 +166,12 @@ The endpoints Postman's collection can be downloaded at [Water-tank-api [v1].pos
 - `Not Found (404)`
 - `Unprocessable Entity (422)`
 
-#### Request example
+#### Request header
+
+- `access_token`
+- `group`
+
+#### Request body example
 ``` json
 {
     "water_level": 10

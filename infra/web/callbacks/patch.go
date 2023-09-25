@@ -3,6 +3,7 @@ package callbacks
 import (
 	"encoding/json"
 	"water-tank-api/controllers"
+	"water-tank-api/core/entity/access"
 	data "water-tank-api/core/entity/water_tank"
 	"water-tank-api/infra/web"
 
@@ -19,6 +20,10 @@ func Patch(ctx iris.Context) {
 	controller := web.Controller()
 
 	tankName := ctx.Params().Get("tank")
+
+	accessToken := ctx.Request().Header.Get("access_token")
+	group := ctx.Request().Header.Get("group")
+
 	bodyBytes, _ := ctx.GetBody()
 
 	err := json.Unmarshal(bodyBytes, &body)
@@ -30,7 +35,7 @@ func Patch(ctx iris.Context) {
 		return
 	}
 
-	response, err := controller.Update(tankName, body.CurrentWaterLevel)
+	response, err := controller.Update(tankName, group, access.AccessToken(accessToken), body.CurrentWaterLevel)
 
 	if err != nil {
 		switch response.Code {

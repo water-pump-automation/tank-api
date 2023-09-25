@@ -2,11 +2,12 @@ package update_tank_state
 
 import (
 	"time"
+	"water-tank-api/core/entity/access"
 	stack "water-tank-api/core/entity/error_stack"
 	"water-tank-api/core/entity/water_tank"
 	data "water-tank-api/core/entity/water_tank"
 	get_tank "water-tank-api/core/usecases/get/tank"
-	"water-tank-api/core/usecases/tank"
+	tank "water-tank-api/core/usecases/get_data_interface"
 )
 
 type UpdateWaterTank struct {
@@ -21,11 +22,12 @@ func NewWaterTankUpdate(tank data.WaterTankData) *UpdateWaterTank {
 	}
 }
 
-func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (err stack.ErrorStack) {
+func (conn *UpdateWaterTank) Update(tank string, group string, accessToken access.AccessToken, currentLevel data.Capacity) (err stack.ErrorStack) {
 	var maximumCapacity water_tank.Capacity
 	var fillState water_tank.State
+	var existingAccessToken access.AccessToken
 
-	maximumCapacity, err = conn.capacity.GetCapacity(tank)
+	maximumCapacity, existingAccessToken, err = conn.capacity.GetData(tank, group)
 
 	if err.HasError() {
 		if entity := err.EntityError(); entity != nil {
@@ -51,14 +53,20 @@ func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (er
 		fillState = data.Filling
 	}
 
-	_, updateErr := conn.tank.UpdateWaterTankState(tank, currentLevel, fillState)
+	if accessToken != existingAccessToken {
+		err.Append(WaterTankInvalidToken)
+		return
+	}
+
+	_, updateErr := conn.tank.UpdateWaterTankState(tank, group, currentLevel, fillState)
 
 	if updateErr.HasError() {
 		err.Append(WaterTankErrorServerError(updateErr.EntityError().Error()))
+		return
 	}
 
 	if fillState == data.Full {
-		_, notifyErr := conn.tank.NotifyFullTank(tank, time.Now())
+		_, notifyErr := conn.tank.NotifyFullTank(tank, group, time.Now())
 		if notifyErr.HasError() {
 			err.Append(WaterTankErrorServerError(updateErr.EntityError().Error()))
 		}

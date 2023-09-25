@@ -46,6 +46,6 @@ func Post(ctx iris.Context) {
 		return
 	}
 
-	ctx.StatusCode(iris.StatusNoContent)
+	ctx.StatusCode(iris.StatusOK)
 	ctx.JSON(response)
 }
