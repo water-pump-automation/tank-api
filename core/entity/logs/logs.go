@@ -13,6 +13,7 @@ type Logger interface {
 }
 
 var loggerGateway Logger = nil
+var emptyLogger Logger = &_empty{}
 
 func SetLogger(logger Logger) (err error) {
 	if loggerGateway == nil {
@@ -23,5 +24,27 @@ func SetLogger(logger Logger) (err error) {
 }
 
 func Gateway() Logger {
-	return loggerGateway
+	if loggerGateway != nil {
+		return loggerGateway
+	}
+	return emptyLogger
+}
+
+type _empty struct {
+}
+
+func (logger *_empty) Context(ctx context.Context) Logger {
+	return &_empty{}
+}
+
+func (logger *_empty) Error(message string) time.Time {
+	return time.Now()
+}
+
+func (logger *_empty) Fatal(message string) time.Time {
+	return time.Now()
+}
+
+func (logger *_empty) Info(message string) time.Time {
+	return time.Now()
 }
