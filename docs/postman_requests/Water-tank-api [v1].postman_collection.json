@@ -1,0 +1,221 @@
+{
+	"info": {
+		"_postman_id": "16f16399-661b-4e50-995c-5004e948b3a2",
+		"name": "Water-tank-api [v1]",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29942362"
+	},
+	"item": [
+		{
+			"name": "External",
+			"item": [
+				{
+					"name": "Get-tank",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/water-tank/:name",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"water-tank",
+								":name"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "TANK_6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get-group",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/water-tank/group/:group",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"water-tank",
+								"group",
+								":group"
+							],
+							"variable": [
+								{
+									"key": "group",
+									"value": "GROUP_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get-all-groups",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/water-tank/group",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"water-tank",
+								"group"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Internal",
+			"item": [
+				{
+					"name": "Register-tank",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"TANK_7\",\n    \"group\": \"GROUP_1\",\n    \"maximum_capacity\": 45\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/water-tank",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"water-tank"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get-tank",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/water-tank/:name",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"water-tank",
+								":name"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "TANK_6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get-group",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/water-tank/group/:group",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"water-tank",
+								"group",
+								":group"
+							],
+							"variable": [
+								{
+									"key": "group",
+									"value": "GROUP_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get-all-groups",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/v1/water-tank/group",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"water-tank",
+								"group"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update-tank",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"water_level\": 10}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/v1/water-tank/:name",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"water-tank",
+								":name"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "TANK_7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
