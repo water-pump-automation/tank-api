@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  water-tank-api-internal-v1:
+    build:
+      dockerfile: internal.Dockerfile
+    image: lo-han/water-tank-api-internal:latest
+  water-tank-api-external-v1:
+    build: 
+      dockerfile: external.Dockerfile
+    image: lo-han/water-tank-api-external:latest
