@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/kataras/iris/v12 v12.2.0-beta6
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	golang.org/x/sync v0.3.0
 )
 
 require (

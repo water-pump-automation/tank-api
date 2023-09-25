@@ -27,7 +27,7 @@
 							"variable": [
 								{
 									"key": "name",
-									"value": "TANK_6"
+									"value": "TANK_7"
 								}
 							]
 						}
@@ -106,76 +106,6 @@
 							"path": [
 								"v1",
 								"water-tank"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get-tank",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/v1/water-tank/:name",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"v1",
-								"water-tank",
-								":name"
-							],
-							"variable": [
-								{
-									"key": "name",
-									"value": "TANK_6"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get-group",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/v1/water-tank/group/:group",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"v1",
-								"water-tank",
-								"group",
-								":group"
-							],
-							"variable": [
-								{
-									"key": "group",
-									"value": "GROUP_1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get-all-groups",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/v1/water-tank/group",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"v1",
-								"water-tank",
-								"group"
 							]
 						}
 					},
