@@ -21,7 +21,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   100,
 					TankState:         data.Empty,
 					CurrentWaterLevel: 0,
-					Water:             nil,
 					Access:            "a",
 				},
 				"TANK_2": {
@@ -30,7 +29,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   80,
 					TankState:         data.Filling,
 					CurrentWaterLevel: 50,
-					Water:             nil,
 					Access:            "b",
 				},
 				"TANK_3": {
@@ -39,7 +37,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   120,
 					TankState:         data.Full,
 					CurrentWaterLevel: 120,
-					Water:             nil,
 					Access:            "c",
 				},
 			},
@@ -50,7 +47,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   100,
 					TankState:         data.Empty,
 					CurrentWaterLevel: 0,
-					Water:             nil,
 					Access:            "d",
 				},
 				"TANK_2": {
@@ -59,7 +55,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   80,
 					TankState:         data.Full,
 					CurrentWaterLevel: 80,
-					Water:             nil,
 					Access:            "e",
 				},
 			},
@@ -70,7 +65,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   120,
 					TankState:         data.Filling,
 					CurrentWaterLevel: 90,
-					Water:             nil,
 					Access:            "f",
 				},
 			},
@@ -108,7 +102,6 @@ func (tank *WaterTankMockData) CreateWaterTank(name string, group string, access
 				MaximumCapacity:   capacity,
 				TankState:         data.Empty,
 				CurrentWaterLevel: 0,
-				Water:             nil,
 				Access:            accessToken,
 			},
 		}
@@ -121,7 +114,6 @@ func (tank *WaterTankMockData) CreateWaterTank(name string, group string, access
 		MaximumCapacity:   capacity,
 		TankState:         data.Empty,
 		CurrentWaterLevel: 0,
-		Water:             nil,
 		Access:            accessToken,
 	}
 

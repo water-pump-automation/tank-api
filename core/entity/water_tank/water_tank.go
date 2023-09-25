@@ -4,7 +4,6 @@ import (
 	"time"
 	"water-tank-api/core/entity/access"
 	stack "water-tank-api/core/entity/error_stack"
-	"water-tank-api/core/entity/water"
 )
 
 type State int
@@ -32,7 +31,6 @@ type WaterTank struct {
 
 	// Fixed attributes
 	MaximumCapacity Capacity
-	Water           *water.Water
 }
 
 type WaterTankData interface {

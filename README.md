@@ -1,5 +1,5 @@
 # water-tank-api
-API for water tank's data management and water health monitoring (_not implemented_).
+API for water tank's data management.
 
 The API is divided into `Internal` and `External` endpoints.
 
@@ -16,10 +16,10 @@ The returned attributes are:
 - `CurrentWaterLevel`
 - `LastFullTime`
 
-While the `Internal` ones also expose all the `External`'s, plus the hability to register a new tank
+The `Internal` exposes all the `External` ones, plus the hability to register a new tank
 and update any water level.
 
-In order to provide a new water state, it must be provided an `access_token`,
+In order to provide a new water state, it must be passed an `access_token`,
 working as a password to prevent other API users to do malicious or multiple modifications.
 
 ## Deploy options
@@ -51,7 +51,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 
 ### Presenter
 
-- [HTTP](infra/web/routes/routes.go)
+- [HTTP](infra/web/routes/routes_internal.go)
 
 ### Logs
 
@@ -63,7 +63,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 
 ## Endpoints
 
-The endpoints Postman's collection can be downloaded at [Water-tank-api [v1].postman_collection.json](docs/postman_requests/Water-tank-api%20[v1].postman_collection.json).
+The endpoints' Postman collection can be downloaded at [Water-tank-api [v1].postman_collection.json](docs/postman_requests/Water-tank-api%20[v1].postman_collection.json).
 
 ### /v1/water-tank/:name [GET]
 
@@ -177,8 +177,3 @@ The endpoints Postman's collection can be downloaded at [Water-tank-api [v1].pos
     "water_level": 10
 }
 ```
-
-## Tests
-
-![Alt text](docs/tests.png)
-
