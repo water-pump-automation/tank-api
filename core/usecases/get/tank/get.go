@@ -26,7 +26,7 @@ func (conn *GetWaterTank) GetCapacity(tank string) (MaximumCapacity water_tank.C
 
 func (conn *GetWaterTank) Get(name string) (response *get.WaterTankState, err stack.ErrorStack) {
 	response = new(get.WaterTankState)
-	var state *water_tank.WaterTankState
+	var state *water_tank.WaterTank
 
 	state, err = conn.tank.GetWaterTankState(name)
 
@@ -45,6 +45,7 @@ func (conn *GetWaterTank) Get(name string) (response *get.WaterTankState, err st
 	response.MaximumCapacity = get.ConvertCapacityToLiters(state.MaximumCapacity)
 	response.TankState = get.MapTankStateEnum(state.TankState)
 	response.CurrentWaterLevel = get.ConvertCapacityToLiters(state.CurrentWaterLevel)
+	response.LastFullTime = state.LastFullTime
 
 	now := time.Now()
 	response.Datetime = &now

@@ -1,17 +1,18 @@
 package database_mock
 
 import (
+	"time"
 	stack "water-tank-api/core/entity/error_stack"
 	data "water-tank-api/core/entity/water_tank"
 )
 
 type WaterTankMockData struct {
-	states map[string]*data.WaterTankState
+	states map[string]*data.WaterTank
 }
 
 func NewWaterTankMockData() *WaterTankMockData {
 	return &WaterTankMockData{
-		states: map[string]*data.WaterTankState{
+		states: map[string]*data.WaterTank{
 			"TANK_1": {
 				Name:              "TANK_1",
 				Group:             "GROUP_1",
@@ -64,12 +65,12 @@ func NewWaterTankMockData() *WaterTankMockData {
 	}
 }
 
-func (tank *WaterTankMockData) GetWaterTankState(names ...string) (state *data.WaterTankState, err stack.ErrorStack) {
+func (tank *WaterTankMockData) GetWaterTankState(names ...string) (state *data.WaterTank, err stack.ErrorStack) {
 	state = tank.states[names[0]]
 	return
 }
 
-func (tank *WaterTankMockData) GetTankGroupState(groups ...string) (state []*data.WaterTankState, err stack.ErrorStack) {
+func (tank *WaterTankMockData) GetTankGroupState(groups ...string) (state []*data.WaterTank, err stack.ErrorStack) {
 	for _, tank := range tank.states {
 		if tank.Group == groups[0] {
 			state = append(state, tank)
@@ -78,7 +79,16 @@ func (tank *WaterTankMockData) GetTankGroupState(groups ...string) (state []*dat
 	return
 }
 
-func (tank *WaterTankMockData) GetAllTankGroupState() (state []*data.WaterTankState, err stack.ErrorStack) {
+func (tank *WaterTankMockData) NotifyFullTank(name string, currentTime time.Time) (state *data.WaterTank, err stack.ErrorStack) {
+	if tank, exists := tank.states[name]; exists {
+		tank.LastFullTime = currentTime
+		state = tank
+		return
+	}
+	return
+}
+
+func (tank *WaterTankMockData) GetAllTankGroupState() (state []*data.WaterTank, err stack.ErrorStack) {
 	for _, tank := range tank.states {
 		state = append(state, tank)
 	}
@@ -87,7 +97,7 @@ func (tank *WaterTankMockData) GetAllTankGroupState() (state []*data.WaterTankSt
 }
 
 func (tank *WaterTankMockData) CreateWaterTank(name string, group string, capacity data.Capacity) (err stack.ErrorStack) {
-	tank.states[name] = &data.WaterTankState{
+	tank.states[name] = &data.WaterTank{
 		Name:              name,
 		Group:             group,
 		MaximumCapacity:   capacity,
@@ -98,7 +108,7 @@ func (tank *WaterTankMockData) CreateWaterTank(name string, group string, capaci
 	return
 }
 
-func (tank *WaterTankMockData) UpdateWaterTankState(name string, waterLevel data.Capacity, levelState data.State) (state *data.WaterTankState, err stack.ErrorStack) {
+func (tank *WaterTankMockData) UpdateWaterTankState(name string, waterLevel data.Capacity, levelState data.State) (state *data.WaterTank, err stack.ErrorStack) {
 	if tank, exists := tank.states[name]; exists {
 		tank.CurrentWaterLevel = waterLevel
 		tank.TankState = levelState
