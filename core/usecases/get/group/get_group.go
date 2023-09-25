@@ -3,6 +3,7 @@ package group
 import (
 	"time"
 	stack "water-tank-api/core/entity/error_stack"
+	"water-tank-api/core/entity/logs"
 	"water-tank-api/core/entity/water_tank"
 	data "water-tank-api/core/entity/water_tank"
 	"water-tank-api/core/usecases/get"
@@ -25,6 +26,7 @@ func (conn *GetGroupWaterTank) Get(name string) (response *get.WaterTankGroupSta
 	if name != "" {
 		states, err = conn.tank.GetTankGroupState(name)
 	} else {
+		logs.Gateway().Info("Empty group! Retrieving all groups...")
 		states, err = conn.tank.GetAllTankGroupState()
 	}
 

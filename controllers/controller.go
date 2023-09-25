@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"fmt"
+	"water-tank-api/core/entity/logs"
 	data "water-tank-api/core/entity/water_tank"
+	"water-tank-api/core/usecases/get"
 	register_tank "water-tank-api/core/usecases/register_tank"
 	update_tank_state "water-tank-api/core/usecases/update_tank_state"
 )
@@ -19,6 +22,11 @@ func NewController(tank data.WaterTankData) *Controller {
 }
 
 func (controller *Controller) Create(tank string, group string, capacity data.Capacity) (response *ControllerResponse, err error) {
+	logs.Gateway().Info(
+		fmt.Sprintf("Creating '%s' tank for group '%s' with %s capacity...",
+			tank, group, get.ConvertCapacityToLiters(capacity)),
+	)
+
 	create := register_tank.NewWaterTank(controller.tank)
 
 	usecaseErr := create.Create(tank, group, capacity)
@@ -34,6 +42,7 @@ func (controller *Controller) Create(tank string, group string, capacity data.Ca
 		}
 
 		err = usecaseErr.LastError()
+		logs.Gateway().Error(err.Error())
 		return
 	}
 
@@ -41,6 +50,11 @@ func (controller *Controller) Create(tank string, group string, capacity data.Ca
 }
 
 func (controller *Controller) Update(tank string, currentLevel data.Capacity) (response *ControllerResponse, err error) {
+	logs.Gateway().Info(
+		fmt.Sprintf("Updating '%s' tank's water level to %s",
+			tank, get.ConvertCapacityToLiters(currentLevel)),
+	)
+
 	update := update_tank_state.NewWaterTankUpdate(controller.tank)
 
 	usecaseErr := update.Update(tank, currentLevel)
@@ -54,11 +68,13 @@ func (controller *Controller) Update(tank string, currentLevel data.Capacity) (r
 			if secondUsecaseError == nil {
 				response = NewControllerError(WaterTankNotFound, firstUsecaseError.Error())
 				err = firstUsecaseError
+				logs.Gateway().Error(err.Error())
 				return
 			}
 
 			response = NewControllerError(WaterTankInvalidRequest, secondUsecaseError.Error())
 			err = secondUsecaseError
+			logs.Gateway().Error(err.Error())
 			return
 		default:
 			response = NewControllerError(WaterTankInternalServerError, usecaseErr.LastError().Error())
@@ -66,6 +82,7 @@ func (controller *Controller) Update(tank string, currentLevel data.Capacity) (r
 		}
 
 		err = usecaseErr.LastError()
+		logs.Gateway().Error(err.Error())
 		return
 	}
 

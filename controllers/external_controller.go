@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+	"water-tank-api/core/entity/logs"
 	data "water-tank-api/core/entity/water_tank"
 	get_group "water-tank-api/core/usecases/get/group"
 	get_tank "water-tank-api/core/usecases/get/tank"
@@ -17,6 +19,8 @@ func NewExternalController(tank data.WaterTankData) *ExternalController {
 }
 
 func (controller *ExternalController) Get(tank string) (response *ControllerResponse, err error) {
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank state...", tank))
+
 	getUsecase := get_tank.NewGetWaterTank(controller.tank)
 
 	usecaseResponse, usecaseErr := getUsecase.Get(tank)
@@ -32,6 +36,7 @@ func (controller *ExternalController) Get(tank string) (response *ControllerResp
 		}
 
 		err = usecaseErr.LastError()
+		logs.Gateway().Error(err.Error())
 		return
 	}
 
@@ -41,6 +46,8 @@ func (controller *ExternalController) Get(tank string) (response *ControllerResp
 }
 
 func (controller *ExternalController) GetAll(group string) (response *ControllerResponse, err error) {
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", group))
+
 	getUsecase := get_group.NewGetGroupWaterTank(controller.tank)
 
 	usecaseResponse, usecaseErr := getUsecase.Get(group)
@@ -56,6 +63,7 @@ func (controller *ExternalController) GetAll(group string) (response *Controller
 		}
 
 		err = usecaseErr.LastError()
+		logs.Gateway().Error(err.Error())
 		return
 	}
 
