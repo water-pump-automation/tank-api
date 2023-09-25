@@ -8,8 +8,8 @@ import (
 )
 
 func Get(ctx iris.Context) {
-	controller := web.ExternalController()
-	tankName := ctx.Params().Get("name")
+	controller := web.Controller()
+	tankName := ctx.Params().Get("tank")
 
 	response, err := controller.Get(tankName)
 

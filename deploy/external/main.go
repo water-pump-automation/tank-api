@@ -34,7 +34,7 @@ func main() {
 	app := iris.New()
 	externalRouter := routes.ExternalRouter{}
 
-	web.SetControllers(nil, controllers.NewExternalController(database_mock.NewWaterTankMockData()))
+	web.SetControllers(controllers.NewController(database_mock.NewWaterTankMockData()))
 	externalRouter.Route(app)
 
 	go func() {

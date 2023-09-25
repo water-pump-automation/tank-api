@@ -1,4 +1,4 @@
-package get_tank
+package tank
 
 import (
 	"fmt"

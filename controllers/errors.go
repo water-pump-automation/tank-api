@@ -1,6 +1,10 @@
 package controllers
 
-import "errors"
+import (
+	"encoding/json"
+	"errors"
+	"water-tank-api/core/usecases/get"
+)
 
 var (
 	WaterTankOK                  = "WATERTANK_200"
@@ -20,9 +24,26 @@ type ControllerResponse struct {
 	Content map[string]interface{} `json:"content"`
 }
 
-func NewControllerResponse(code string, content map[string]interface{}) *ControllerResponse {
+func NewControllerResponse(code string, content *get.WaterTankState) *ControllerResponse {
+	bytes, _ := json.Marshal(content)
+
+	m := make(map[string]interface{})
+	_ = json.Unmarshal(bytes, &m)
+
 	return &ControllerResponse{
-		Content: content,
+		Content: m,
+		Code:    code,
+	}
+}
+
+func NewControllerGroupResponse(code string, content *get.WaterTankGroupState) *ControllerResponse {
+	bytes, _ := json.Marshal(content)
+
+	m := make(map[string]interface{})
+	_ = json.Unmarshal(bytes, &m)
+
+	return &ControllerResponse{
+		Content: m,
 		Code:    code,
 	}
 }

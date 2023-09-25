@@ -20,14 +20,12 @@ func (stack *ErrorStack) HasError() bool {
 	return false
 }
 
-func (stack *ErrorStack) Append(err error) {
-	var layer string
-	if len(stack.errors) == 0 {
-		layer = "entity"
-	} else if len(stack.errors) > 0 {
-		layer = fmt.Sprintf("usecase_%d", stack.usecaseErrors)
-		stack.usecaseErrors++
+func (stack *ErrorStack) AppendEntityError(err error) {
+	if stack.errors == nil {
+		stack.errors = make(map[string]_err)
 	}
+
+	layer := "entity"
 
 	stack.errors[layer] = _err{
 		layer: layer,
@@ -36,6 +34,9 @@ func (stack *ErrorStack) Append(err error) {
 }
 
 func (stack *ErrorStack) EntityError() (err error) {
+	if stack.errors == nil {
+		stack.errors = make(map[string]_err)
+	}
 	if stackErr, exists := stack.errors["entity"]; exists {
 		return stackErr.err
 	}
@@ -43,7 +44,24 @@ func (stack *ErrorStack) EntityError() (err error) {
 	return nil
 }
 
-func (stack *ErrorStack) UsecaseError() (err error) {
+func (stack *ErrorStack) Append(err error) {
+	if stack.errors == nil {
+		stack.errors = make(map[string]_err)
+	}
+
+	stack.usecaseErrors++
+	layer := fmt.Sprintf("usecase_%d", stack.usecaseErrors)
+
+	stack.errors[layer] = _err{
+		layer: layer,
+		err:   err,
+	}
+}
+
+func (stack *ErrorStack) LastError() (err error) {
+	if stack.errors == nil {
+		stack.errors = make(map[string]_err)
+	}
 	usecase := fmt.Sprintf("usecase_%d", stack.usecaseErrors)
 	if stackErr, exists := stack.errors[usecase]; exists {
 		return stackErr.err
@@ -52,7 +70,10 @@ func (stack *ErrorStack) UsecaseError() (err error) {
 	return nil
 }
 
-func (stack *ErrorStack) PopUsecaseError() (err error) {
+func (stack *ErrorStack) PopError() (err error) {
+	if stack.errors == nil {
+		stack.errors = make(map[string]_err)
+	}
 	usecase := fmt.Sprintf("usecase_%d", stack.usecaseErrors)
 
 	if stackErr, exists := stack.errors[usecase]; exists {

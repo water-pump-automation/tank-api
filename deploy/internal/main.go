@@ -34,8 +34,8 @@ func main() {
 	app := iris.New()
 	internalRouter := routes.InternalRouter{}
 
+	web.SetControllers(controllers.NewController(database_mock.NewWaterTankMockData()))
 	internalRouter.Route(app)
-	web.SetControllers(controllers.NewInternalController(database_mock.NewWaterTankMockData()), nil)
 
 	go func() {
 		if err := app.Run(iris.Addr(fmt.Sprintf(":%d", *port))); err != nil {

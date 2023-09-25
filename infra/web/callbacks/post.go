@@ -10,6 +10,7 @@ import (
 )
 
 type PostBody struct {
+	Name            string        `json:"name"`
 	Group           string        `json:"group"`
 	MaximumCapacity data.Capacity `json:"maximum_capacity"`
 }
@@ -17,9 +18,8 @@ type PostBody struct {
 func Post(ctx iris.Context) {
 	var body PostBody
 
-	controller := web.InternalController()
+	controller := web.Controller()
 
-	tankName := ctx.Params().Get("name")
 	bodyBytes, _ := ctx.GetBody()
 
 	err := json.Unmarshal(bodyBytes, &body)
@@ -31,7 +31,7 @@ func Post(ctx iris.Context) {
 		return
 	}
 
-	response, err := controller.Create(tankName, body.Group, body.MaximumCapacity)
+	response, err := controller.Create(body.Name, body.Group, body.MaximumCapacity)
 
 	if err != nil {
 		switch response.Code {

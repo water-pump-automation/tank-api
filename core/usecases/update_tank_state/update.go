@@ -4,7 +4,7 @@ import (
 	stack "water-tank-api/core/entity/error_stack"
 	"water-tank-api/core/entity/water_tank"
 	data "water-tank-api/core/entity/water_tank"
-	get_tank "water-tank-api/core/usecases/get_tank"
+	get_tank "water-tank-api/core/usecases/get/tank"
 	"water-tank-api/core/usecases/tank"
 )
 
@@ -22,6 +22,7 @@ func NewWaterTankUpdate(tank data.WaterTankData) *UpdateWaterTank {
 
 func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (err stack.ErrorStack) {
 	var maximumCapacity water_tank.Capacity
+	var fillState water_tank.State
 
 	maximumCapacity, err = conn.capacity.GetCapacity(tank)
 
@@ -31,12 +32,7 @@ func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (er
 			return
 		}
 
-		err.Append(WaterTankErrorNotFound(err.UsecaseError().Error()))
-		return
-	}
-
-	if currentLevel > maximumCapacity {
-		err.Append(WaterTankCurrentWaterLevelBiggerThanMax)
+		err.Append(WaterTankErrorNotFound(err.LastError().Error()))
 		return
 	}
 
@@ -45,7 +41,16 @@ func (conn *UpdateWaterTank) Update(tank string, currentLevel data.Capacity) (er
 		return
 	}
 
-	_, updateErr := conn.tank.UpdateWaterTankState(tank, currentLevel)
+	if currentLevel > maximumCapacity {
+		err.Append(WaterTankCurrentWaterLevelBiggerThanMax)
+		return
+	} else if currentLevel == maximumCapacity {
+		fillState = data.Full
+	} else if currentLevel < maximumCapacity {
+		fillState = data.Filling
+	}
+
+	_, updateErr := conn.tank.UpdateWaterTankState(tank, currentLevel, fillState)
 
 	if updateErr.HasError() {
 		err.Append(WaterTankErrorServerError(updateErr.EntityError().Error()))

@@ -2,18 +2,13 @@ package web
 
 import "water-tank-api/controllers"
 
-var instantiatedInternalController *controllers.InternalController = nil
+var instantiatedController *controllers.Controller = nil
 var instantiatedExternalController *controllers.ExternalController = nil
 
-func SetControllers(internal *controllers.InternalController, external *controllers.ExternalController) {
-	instantiatedInternalController = internal
-	instantiatedExternalController = external
+func SetControllers(internal *controllers.Controller) {
+	instantiatedController = internal
 }
 
-func ExternalController() *controllers.ExternalController {
-	return instantiatedExternalController
-}
-
-func InternalController() *controllers.InternalController {
-	return instantiatedInternalController
+func Controller() *controllers.Controller {
+	return instantiatedController
 }

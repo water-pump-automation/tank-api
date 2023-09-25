@@ -2,10 +2,8 @@ package controllers
 
 import (
 	data "water-tank-api/core/entity/water_tank"
-	"water-tank-api/core/usecases/get_group"
-	get_tank "water-tank-api/core/usecases/get_tank"
-
-	"github.com/fatih/structs"
+	get_group "water-tank-api/core/usecases/get/group"
+	get_tank "water-tank-api/core/usecases/get/tank"
 )
 
 type ExternalController struct {
@@ -26,18 +24,18 @@ func (controller *ExternalController) Get(tank string) (response *ControllerResp
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
 		case nil:
-			response = NewControllerError(WaterTankNotFound, usecaseErr.UsecaseError().Error())
+			response = NewControllerError(WaterTankNotFound, usecaseErr.LastError().Error())
 			break
 		default:
-			response = NewControllerError(WaterTankInternalServerError, usecaseErr.UsecaseError().Error())
+			response = NewControllerError(WaterTankInternalServerError, usecaseErr.LastError().Error())
 			break
 		}
 
-		err = usecaseErr.UsecaseError()
+		err = usecaseErr.LastError()
 		return
 	}
 
-	response = NewControllerResponse(WaterTankOK, structs.Map(usecaseResponse))
+	response = NewControllerResponse(WaterTankOK, usecaseResponse)
 
 	return
 }
@@ -50,18 +48,18 @@ func (controller *ExternalController) GetAll(group string) (response *Controller
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
 		case nil:
-			response = NewControllerError(WaterTankNotFound, usecaseErr.UsecaseError().Error())
+			response = NewControllerError(WaterTankNotFound, usecaseErr.LastError().Error())
 			break
 		default:
-			response = NewControllerError(WaterTankInternalServerError, usecaseErr.UsecaseError().Error())
+			response = NewControllerError(WaterTankInternalServerError, usecaseErr.LastError().Error())
 			break
 		}
 
-		err = usecaseErr.UsecaseError()
+		err = usecaseErr.LastError()
 		return
 	}
 
-	response = NewControllerResponse(WaterTankOK, structs.Map(usecaseResponse))
+	response = NewControllerGroupResponse(WaterTankOK, usecaseResponse)
 
 	return
 }

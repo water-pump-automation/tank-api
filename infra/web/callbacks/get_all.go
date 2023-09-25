@@ -8,7 +8,7 @@ import (
 )
 
 func GetAll(ctx iris.Context) {
-	controller := web.ExternalController()
+	controller := web.Controller()
 	groupName := ctx.Params().Get("group")
 
 	response, err := controller.GetAll(groupName)

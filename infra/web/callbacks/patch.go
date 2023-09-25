@@ -16,9 +16,9 @@ type PatchBody struct {
 func Patch(ctx iris.Context) {
 	var body PatchBody
 
-	controller := web.InternalController()
+	controller := web.Controller()
 
-	tankName := ctx.Params().Get("name")
+	tankName := ctx.Params().Get("tank")
 	bodyBytes, _ := ctx.GetBody()
 
 	err := json.Unmarshal(bodyBytes, &body)

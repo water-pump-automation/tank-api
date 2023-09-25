@@ -1,4 +1,4 @@
-package get_group
+package group
 
 import (
 	"fmt"
