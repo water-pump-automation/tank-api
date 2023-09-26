@@ -24,7 +24,7 @@ func (tank *WaterTankFailMockData) GetTankGroupState(groups ...string) (state []
 	return
 }
 
-func (tank *WaterTankFailMockData) NotifyFullTank(name string, currentTime time.Time) (state *data.WaterTank, err stack.ErrorStack) {
+func (tank *WaterTankFailMockData) NotifyFullTank(name string, group string, currentTime time.Time) (state *data.WaterTank, err stack.ErrorStack) {
 	err.AddEntityError(errors.New("ERROR"))
 	return
 }
@@ -34,7 +34,7 @@ func (tank *WaterTankFailMockData) CreateWaterTank(name string, group string, ac
 	return
 }
 
-func (tank *WaterTankFailMockData) UpdateWaterTankState(name string, waterLevel data.Capacity, levelState data.State) (state *data.WaterTank, err stack.ErrorStack) {
+func (tank *WaterTankFailMockData) UpdateWaterTankState(name string, group string, waterLevel data.Capacity, levelState data.State) (state *data.WaterTank, err stack.ErrorStack) {
 	err.AddEntityError(errors.New("ERROR"))
 	return
 }

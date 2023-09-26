@@ -11,6 +11,8 @@ type WaterTankMockData struct {
 	states map[string]map[string]*data.WaterTank
 }
 
+var MockTimeNow = time.Now()
+
 func NewWaterTankMockData() *WaterTankMockData {
 	return &WaterTankMockData{
 		states: map[string]map[string]*data.WaterTank{
@@ -22,6 +24,7 @@ func NewWaterTankMockData() *WaterTankMockData {
 					TankState:         data.Empty,
 					CurrentWaterLevel: 0,
 					Access:            "a",
+					LastFullTime:      MockTimeNow,
 				},
 				"TANK_2": {
 					Name:              "TANK_2",
@@ -30,6 +33,7 @@ func NewWaterTankMockData() *WaterTankMockData {
 					TankState:         data.Filling,
 					CurrentWaterLevel: 50,
 					Access:            "b",
+					LastFullTime:      MockTimeNow,
 				},
 				"TANK_3": {
 					Name:              "TANK_3",
@@ -38,6 +42,7 @@ func NewWaterTankMockData() *WaterTankMockData {
 					TankState:         data.Full,
 					CurrentWaterLevel: 120,
 					Access:            "c",
+					LastFullTime:      MockTimeNow,
 				},
 			},
 			"GROUP_2": {
@@ -48,6 +53,7 @@ func NewWaterTankMockData() *WaterTankMockData {
 					TankState:         data.Empty,
 					CurrentWaterLevel: 0,
 					Access:            "d",
+					LastFullTime:      MockTimeNow,
 				},
 				"TANK_2": {
 					Name:              "TANK_2",
@@ -56,6 +62,7 @@ func NewWaterTankMockData() *WaterTankMockData {
 					TankState:         data.Full,
 					CurrentWaterLevel: 80,
 					Access:            "e",
+					LastFullTime:      MockTimeNow,
 				},
 			},
 			"GROUP_3": {
@@ -66,6 +73,7 @@ func NewWaterTankMockData() *WaterTankMockData {
 					TankState:         data.Filling,
 					CurrentWaterLevel: 90,
 					Access:            "f",
+					LastFullTime:      MockTimeNow,
 				},
 			},
 		},
