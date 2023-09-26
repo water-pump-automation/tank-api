@@ -19,13 +19,14 @@ func NewGetGroupWaterTank(tank data.WaterTankData) *GetGroupWaterTank {
 }
 
 func (conn *GetGroupWaterTank) Get(name string) (response *get.WaterTankGroupState, err stack.ErrorStack) {
-	var states []*water_tank.WaterTankState
+	var states []*water_tank.WaterTank
 	response = new(get.WaterTankGroupState)
 
 	if name != "" {
 		states, err = conn.tank.GetTankGroupState(name)
 	} else {
-		states, err = conn.tank.GetAllTankGroupState()
+		err.Append(WaterTankMissingGroup)
+		return
 	}
 
 	if err.HasError() {
@@ -45,6 +46,7 @@ func (conn *GetGroupWaterTank) Get(name string) (response *get.WaterTankGroupSta
 		state.MaximumCapacity = get.ConvertCapacityToLiters(tank.MaximumCapacity)
 		state.TankState = get.MapTankStateEnum(tank.TankState)
 		state.CurrentWaterLevel = get.ConvertCapacityToLiters(tank.CurrentWaterLevel)
+		state.LastFullTime = tank.LastFullTime
 
 		response.Tanks = append(response.Tanks, state)
 	}

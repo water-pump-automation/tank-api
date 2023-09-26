@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+	"water-tank-api/core/entity/logs"
 	data "water-tank-api/core/entity/water_tank"
 	get_group "water-tank-api/core/usecases/get/group"
 	get_tank "water-tank-api/core/usecases/get/tank"
@@ -16,10 +18,12 @@ func NewExternalController(tank data.WaterTankData) *ExternalController {
 	}
 }
 
-func (controller *ExternalController) Get(tank string) (response *ControllerResponse, err error) {
+func (controller *ExternalController) Get(tank string, group string) (response *ControllerResponse, err error) {
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank, of group '%s' state...", tank, group))
+
 	getUsecase := get_tank.NewGetWaterTank(controller.tank)
 
-	usecaseResponse, usecaseErr := getUsecase.Get(tank)
+	usecaseResponse, usecaseErr := getUsecase.Get(tank, group)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
@@ -32,6 +36,7 @@ func (controller *ExternalController) Get(tank string) (response *ControllerResp
 		}
 
 		err = usecaseErr.LastError()
+		logs.Gateway().Error(err.Error())
 		return
 	}
 
@@ -40,7 +45,9 @@ func (controller *ExternalController) Get(tank string) (response *ControllerResp
 	return
 }
 
-func (controller *ExternalController) GetAll(group string) (response *ControllerResponse, err error) {
+func (controller *ExternalController) GetGroup(group string) (response *ControllerResponse, err error) {
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", group))
+
 	getUsecase := get_group.NewGetGroupWaterTank(controller.tank)
 
 	usecaseResponse, usecaseErr := getUsecase.Get(group)
@@ -48,6 +55,11 @@ func (controller *ExternalController) GetAll(group string) (response *Controller
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
 		case nil:
+			useCase := usecaseErr.LastError()
+			if useCase == get_group.WaterTankMissingGroup {
+				response = NewControllerError(WaterTankBadRequest, usecaseErr.LastError().Error())
+				return
+			}
 			response = NewControllerError(WaterTankNotFound, usecaseErr.LastError().Error())
 			break
 		default:
@@ -56,6 +68,7 @@ func (controller *ExternalController) GetAll(group string) (response *Controller
 		}
 
 		err = usecaseErr.LastError()
+		logs.Gateway().Error(err.Error())
 		return
 	}
 

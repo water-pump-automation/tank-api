@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"water-tank-api/core/entity/access"
 	"water-tank-api/core/usecases/get"
 )
 
@@ -32,6 +33,13 @@ func NewControllerResponse(code string, content *get.WaterTankState) *Controller
 
 	return &ControllerResponse{
 		Content: m,
+		Code:    code,
+	}
+}
+
+func NewControllerCreateResponse(code string, content access.AccessToken) *ControllerResponse {
+	return &ControllerResponse{
+		Content: map[string]interface{}{"access_token": content},
 		Code:    code,
 	}
 }

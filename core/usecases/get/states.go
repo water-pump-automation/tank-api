@@ -14,6 +14,7 @@ type WaterTankState struct {
 	MaximumCapacity   string     `json:"maximum_capacity"`
 	TankState         string     `json:"tank_state"`
 	CurrentWaterLevel string     `json:"current_water_level"`
+	LastFullTime      time.Time  `json:"last_full_time"`
 	Datetime          *time.Time `json:"datetime,omitempty"`
 }
 
