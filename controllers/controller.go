@@ -88,6 +88,8 @@ func (controller *Controller) Update(tank string, group string, accessToken acce
 		return
 	}
 
+	response = NewControllerEmptyResponse(WaterTankNoContent)
+
 	return
 }
 

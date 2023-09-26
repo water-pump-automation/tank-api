@@ -37,6 +37,13 @@ func NewControllerResponse(code string, content *get.WaterTankState) *Controller
 	}
 }
 
+func NewControllerEmptyResponse(code string) *ControllerResponse {
+	return &ControllerResponse{
+		Content: map[string]interface{}{},
+		Code:    code,
+	}
+}
+
 func NewControllerCreateResponse(code string, content access.AccessToken) *ControllerResponse {
 	return &ControllerResponse{
 		Content: map[string]interface{}{"access_token": content},
