@@ -20,16 +20,17 @@ func (stack *ErrorStack) HasError() bool {
 	return false
 }
 
-func (stack *ErrorStack) AppendEntityError(err error) {
+func (stack *ErrorStack) AddEntityError(err error) {
 	if stack.errors == nil {
 		stack.errors = make(map[string]_err)
 	}
 
 	layer := "entity"
-
-	stack.errors[layer] = _err{
-		layer: layer,
-		err:   err,
+	if _, exists := stack.errors[layer]; !exists {
+		stack.errors[layer] = _err{
+			layer: layer,
+			err:   err,
+		}
 	}
 }
 
@@ -64,6 +65,10 @@ func (stack *ErrorStack) LastError() (err error) {
 	}
 	usecase := fmt.Sprintf("usecase_%d", stack.usecaseErrors)
 	if stackErr, exists := stack.errors[usecase]; exists {
+		return stackErr.err
+	}
+
+	if stackErr, exists := stack.errors["entity"]; exists {
 		return stackErr.err
 	}
 

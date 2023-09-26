@@ -15,26 +15,26 @@ func NewWaterTankFailMockData() *WaterTankFailMockData {
 }
 
 func (tank *WaterTankFailMockData) GetWaterTankState(group string, names ...string) (state *data.WaterTank, err stack.ErrorStack) {
-	err.AppendEntityError(errors.New("ERROR"))
+	err.AddEntityError(errors.New("ERROR"))
 	return
 }
 
 func (tank *WaterTankFailMockData) GetTankGroupState(groups ...string) (state []*data.WaterTank, err stack.ErrorStack) {
-	err.AppendEntityError(errors.New("ERROR"))
+	err.AddEntityError(errors.New("ERROR"))
 	return
 }
 
 func (tank *WaterTankFailMockData) NotifyFullTank(name string, currentTime time.Time) (state *data.WaterTank, err stack.ErrorStack) {
-	err.AppendEntityError(errors.New("ERROR"))
+	err.AddEntityError(errors.New("ERROR"))
 	return
 }
 
 func (tank *WaterTankFailMockData) CreateWaterTank(name string, group string, accessToken access.AccessToken, capacity data.Capacity) (err stack.ErrorStack) {
-	err.AppendEntityError(errors.New("ERROR"))
+	err.AddEntityError(errors.New("ERROR"))
 	return
 }
 
 func (tank *WaterTankFailMockData) UpdateWaterTankState(name string, waterLevel data.Capacity, levelState data.State) (state *data.WaterTank, err stack.ErrorStack) {
-	err.AppendEntityError(errors.New("ERROR"))
+	err.AddEntityError(errors.New("ERROR"))
 	return
 }
