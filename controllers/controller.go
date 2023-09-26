@@ -68,13 +68,13 @@ func (controller *Controller) Update(tank string, group string, accessToken acce
 			secondUsecaseError := usecaseErr.PopError()
 
 			if secondUsecaseError == nil {
-				response = NewControllerError(WaterTankNotFound, firstUsecaseError.Error())
+				response = NewControllerError(WaterTankInvalidRequest, firstUsecaseError.Error())
 				err = firstUsecaseError
 				logs.Gateway().Error(err.Error())
 				return
 			}
 
-			response = NewControllerError(WaterTankInvalidRequest, secondUsecaseError.Error())
+			response = NewControllerError(WaterTankNotFound, secondUsecaseError.Error())
 			err = secondUsecaseError
 			logs.Gateway().Error(err.Error())
 			return
