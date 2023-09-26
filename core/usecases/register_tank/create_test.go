@@ -78,7 +78,7 @@ func Test_WaterTank_Create(t *testing.T) {
 		}
 	})
 
-	t.Run("Internal server error getting water tank", func(t *testing.T) {
+	t.Run("Internal server error updating water tank", func(t *testing.T) {
 		_, err := failCreateTank.Create("TANK_235", "GROUP_1", 100)
 
 		if !err.HasError() {

@@ -35,7 +35,7 @@ func (conn *UpdateWaterTank) Update(tank string, group string, accessToken acces
 			return
 		}
 
-		err.Append(WaterTankErrorNotFound(err.LastError().Error()))
+		err.Append(WaterTankErrorNotFound(tank))
 		return
 	}
 
@@ -49,6 +49,8 @@ func (conn *UpdateWaterTank) Update(tank string, group string, accessToken acces
 		return
 	} else if currentLevel == maximumCapacity {
 		fillState = data.Full
+	} else if currentLevel == 0 {
+		fillState = data.Empty
 	} else if currentLevel < maximumCapacity {
 		fillState = data.Filling
 	}
