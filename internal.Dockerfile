@@ -6,7 +6,7 @@ COPY ./go.mod ./go.sum ./
 RUN go mod download && go mod verify
 
 COPY . ./
-RUN go build -v -o ./water-tank-api ./deploy/internal
+RUN go build -v -o ./water-tank-api ./cmd/internal
 
 FROM alpine:latest
 
