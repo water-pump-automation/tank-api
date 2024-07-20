@@ -3,12 +3,14 @@ version: '2'
 services:
   water-tank-api-internal-v1:
     build:
+      context: .
       dockerfile: internal.Dockerfile
     image: lo-han/water-tank-api-internal:latest
     ports:
       - "8081:8080"
   water-tank-api-external-v1:
     build: 
+      context: .
       dockerfile: external.Dockerfile
     image: lo-han/water-tank-api-external:latest
     ports:
