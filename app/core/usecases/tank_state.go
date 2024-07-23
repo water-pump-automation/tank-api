@@ -1,10 +1,11 @@
-package water_tank
+package usecases
 
 import (
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
+	"water-tank-api/app/core/entity/water_tank"
 )
 
 type WaterTankState struct {
@@ -22,26 +23,26 @@ type WaterTankGroupState struct {
 	Datetime time.Time         `json:"datetime"`
 }
 
-func MapTankStateEnum(tankState State) string {
+func MapTankStateEnum(tankState water_tank.State) string {
 	switch tankState {
-	case Empty:
+	case water_tank.Empty:
 		return "EMPTY"
-	case Filling:
+	case water_tank.Filling:
 		return "FILLING"
-	case Full:
+	case water_tank.Full:
 		return "FULL"
 	default:
 		return "UNKOWN"
 	}
 }
 
-func ConvertCapacityToLiters(level Capacity) string {
+func ConvertCapacityToLiters(level water_tank.Capacity) string {
 	return fmt.Sprintf("%1.2fL", level)
 }
 
-func ConverLitersToCapacity(liters string) Capacity {
+func ConverLitersToCapacity(liters string) water_tank.Capacity {
 	substrings := strings.Split(liters, "L")
 	capacity, _ := strconv.ParseFloat(substrings[0], 32)
 
-	return Capacity(capacity)
+	return water_tank.Capacity(capacity)
 }

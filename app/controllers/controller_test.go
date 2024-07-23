@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 	"water-tank-api/app/core/entity/logs"
-	"water-tank-api/app/core/entity/water_tank"
+	"water-tank-api/app/core/usecases"
 	register_tank "water-tank-api/app/core/usecases/create_tank"
 	"water-tank-api/app/core/usecases/get_group"
 	"water-tank-api/app/core/usecases/get_tank"
@@ -142,7 +142,7 @@ func Test_Controller_Get(t *testing.T) {
 
 	Test_Controller_Successful_Get := func(t *testing.T) {
 		t.Run("Successful get", func(t *testing.T) {
-			expectedReturn := NewControllerResponse(WaterTankOK, &water_tank.WaterTankState{
+			expectedReturn := NewControllerResponse(WaterTankOK, &usecases.WaterTankState{
 				Name:              "TANK_1",
 				Group:             "GROUP_1",
 				MaximumCapacity:   "100.00L",

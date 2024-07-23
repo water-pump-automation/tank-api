@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"water-tank-api/app/core/entity/access"
-	"water-tank-api/app/core/entity/water_tank"
+	"water-tank-api/app/core/usecases"
 )
 
 var (
@@ -25,7 +25,7 @@ type ControllerResponse struct {
 	Content map[string]interface{} `json:"content"`
 }
 
-func NewControllerResponse(code string, content *water_tank.WaterTankState) *ControllerResponse {
+func NewControllerResponse(code string, content *usecases.WaterTankState) *ControllerResponse {
 	bytes, _ := json.Marshal(content)
 
 	m := make(map[string]interface{})
@@ -51,7 +51,7 @@ func NewControllerCreateResponse(code string, content access.AccessToken) *Contr
 	}
 }
 
-func NewControllerGroupResponse(code string, content *water_tank.WaterTankGroupState) *ControllerResponse {
+func NewControllerGroupResponse(code string, content *usecases.WaterTankGroupState) *ControllerResponse {
 	bytes, _ := json.Marshal(content)
 
 	m := make(map[string]interface{})

@@ -9,36 +9,40 @@ import (
 
 	"water-tank-api/app/controllers"
 	"water-tank-api/app/core/entity/logs"
-	database_mock "water-tank-api/app/infra/database/mock"
+	mongodb "water-tank-api/app/infra/database/mongoDB"
 	"water-tank-api/app/infra/logs/stdout"
-	"water-tank-api/app/infra/web"
 	"water-tank-api/app/infra/web/routes"
 
-	kingpin "github.com/alecthomas/kingpin/v2"
 	iris "github.com/kataras/iris/v12"
 	"golang.org/x/sync/errgroup"
 )
 
 var (
-	port = kingpin.Flag("port", "Server's port").Short('p').Default("8080").Envar("SERVER_PORT").Int()
+	port               = os.Getenv("SERVER_PORT")
+	databaseURI        = os.Getenv("DATABASE_URI")
+	databaseName       = os.Getenv("DATABASE_NAME")
+	databaseCollection = os.Getenv("DATABASE_COLLECTION")
 )
 
 func main() {
-	kingpin.Parse()
-
 	mainCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	logs.SetLogger(stdout.NewSTDOutLogger())
 
+	mongoClient, err := mongodb.InitClient(mainCtx, databaseURI)
+	if err != nil {
+		logs.Gateway().Fatal(fmt.Sprintf("Error on starting mongo DB client: %s", err.Error()))
+	}
+	collection := mongodb.NewCollection(mainCtx, mongoClient, databaseName, databaseCollection)
+
 	app := iris.New()
 	internalRouter := routes.InternalRouter{}
 
-	web.SetControllers(controllers.NewController(database_mock.NewWaterTankMockData()))
-	internalRouter.Route(app)
+	internalRouter.Route(app, controllers.NewController(collection))
 
 	go func() {
-		if err := app.Run(iris.Addr(fmt.Sprintf(":%d", *port))); err != nil {
+		if err := app.Run(iris.Addr(fmt.Sprintf(":%s", port))); err != nil {
 			logs.Gateway().Fatal(fmt.Sprintf("Error on starting http listener: %s", err.Error()))
 		}
 	}()
@@ -48,6 +52,10 @@ func main() {
 		<-gCtx.Done()
 
 		app.Shutdown(context.Background())
+
+		if err := mongoClient.Disconnect(context.Background()); err != nil {
+			panic(err)
+		}
 
 		return nil
 	})
