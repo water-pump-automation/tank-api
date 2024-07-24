@@ -2,7 +2,6 @@ package database_mock
 
 import (
 	"errors"
-	"time"
 	"water-tank-api/app/core/entity/access"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
@@ -20,11 +19,6 @@ func (tank *WaterTankFailMockData) GetWaterTankState(group string, names ...stri
 }
 
 func (tank *WaterTankFailMockData) GetTankGroupState(groups ...string) (state []*water_tank.WaterTank, err stack.ErrorStack) {
-	err.AddEntityError(errors.New("ERROR"))
-	return
-}
-
-func (tank *WaterTankFailMockData) NotifyFullTank(name string, group string, currentTime time.Time) (state *water_tank.WaterTank, err stack.ErrorStack) {
 	err.AddEntityError(errors.New("ERROR"))
 	return
 }

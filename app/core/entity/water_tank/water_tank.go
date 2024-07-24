@@ -36,7 +36,6 @@ type WaterTank struct {
 type WaterTankData interface {
 	CreateWaterTank(name string, group string, accessToken access.AccessToken, capacity Capacity) (err stack.ErrorStack)
 	UpdateWaterTankState(name string, group string, waterLevel Capacity, levelState State) (state *WaterTank, err stack.ErrorStack)
-	NotifyFullTank(name string, group string, currentTime time.Time) (state *WaterTank, err stack.ErrorStack)
 	GetWaterTankState(group string, names ...string) (state *WaterTank, err stack.ErrorStack)
 	GetTankGroupState(groups ...string) (state []*WaterTank, err stack.ErrorStack)
 }

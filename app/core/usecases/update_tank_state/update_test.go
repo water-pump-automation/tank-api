@@ -165,13 +165,6 @@ func (tank *waterTankUpdateMockData) GetTankGroupState(groups ...string) (state 
 	return
 }
 
-func (tank *waterTankUpdateMockData) NotifyFullTank(name string, group string, currentTime time.Time) (state *water_tank.WaterTank, err stack.ErrorStack) {
-	if group, exists := tank.states[group]; exists {
-		group[name].LastFullTime = currentTime
-	}
-	return
-}
-
 func (tank *waterTankUpdateMockData) CreateWaterTank(name string, group string, accessToken access.AccessToken, capacity water_tank.Capacity) (err stack.ErrorStack) {
 	if _, exists := tank.states[group]; !exists {
 		tank.states[group] = map[string]*water_tank.WaterTank{

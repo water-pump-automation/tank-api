@@ -1,7 +1,6 @@
 package update_tank_state
 
 import (
-	"time"
 	"water-tank-api/app/core/entity/access"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
@@ -63,13 +62,6 @@ func (conn *UpdateWaterTank) Update(tank string, group string, accessToken acces
 	if updateErr.HasError() {
 		err.Append(ErrWaterTankErrorServerError(updateErr.EntityError().Error()))
 		return
-	}
-
-	if fillState == water_tank.Full {
-		_, notifyErr := conn.tank.NotifyFullTank(tank, group, time.Now())
-		if notifyErr.HasError() {
-			err.Append(ErrWaterTankErrorServerError(updateErr.EntityError().Error()))
-		}
 	}
 
 	return
