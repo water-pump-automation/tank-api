@@ -5,31 +5,41 @@ import (
 	"water-tank-api/app/core/entity/access"
 	"water-tank-api/app/core/entity/logs"
 	"water-tank-api/app/core/entity/water_tank"
-	register_tank "water-tank-api/app/core/usecases/create_tank"
+	"water-tank-api/app/core/usecases/create_tank"
+	"water-tank-api/app/core/usecases/get_group"
+	"water-tank-api/app/core/usecases/get_tank"
+	"water-tank-api/app/core/usecases/ports"
 	update_tank_state "water-tank-api/app/core/usecases/update_tank_state"
 )
 
-type Controller struct {
-	tank            water_tank.WaterTankData
-	externalMethods *ExternalController
+type InternalController struct {
+	getTankUsecase    *get_tank.GetWaterTank
+	getGroupUsecase   *get_group.GetGroupWaterTank
+	createTankUsecase *create_tank.CreateWaterTank
+	updateTankUsecase *update_tank_state.UpdateWaterTank
 }
 
-func NewController(tank water_tank.WaterTankData) *Controller {
-	return &Controller{
-		tank:            tank,
-		externalMethods: NewExternalController(tank),
+func NewInternalController(
+	getTankUsecase *get_tank.GetWaterTank,
+	getGroupUsecase *get_group.GetGroupWaterTank,
+	createTankUsecase *create_tank.CreateWaterTank,
+	updateTankUsecase *update_tank_state.UpdateWaterTank,
+) *InternalController {
+	return &InternalController{
+		getTankUsecase:    getTankUsecase,
+		getGroupUsecase:   getGroupUsecase,
+		createTankUsecase: createTankUsecase,
+		updateTankUsecase: updateTankUsecase,
 	}
 }
 
-func (controller *Controller) Create(tank string, group string, capacity water_tank.Capacity) (response *ControllerResponse, err error) {
+func (controller *InternalController) Create(tank string, group string, capacity water_tank.Capacity) (response *ControllerResponse, err error) {
 	logs.Gateway().Info(
 		fmt.Sprintf("Creating '%s' tank for group '%s' with %s capacity...",
-			tank, group, water_tank.ConvertCapacityToLiters(capacity)),
+			tank, group, ports.ConvertCapacityToLiters(capacity)),
 	)
 
-	create := register_tank.NewWaterTank(controller.tank)
-
-	accessToken, usecaseErr := create.Create(tank, group, capacity)
+	accessToken, usecaseErr := controller.createTankUsecase.Create(tank, group, capacity)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
@@ -48,15 +58,13 @@ func (controller *Controller) Create(tank string, group string, capacity water_t
 	return
 }
 
-func (controller *Controller) Update(tank string, group string, accessToken access.AccessToken, currentLevel water_tank.Capacity) (response *ControllerResponse, err error) {
+func (controller *InternalController) Update(tank string, group string, accessToken access.AccessToken, currentLevel water_tank.Capacity) (response *ControllerResponse, err error) {
 	logs.Gateway().Info(
 		fmt.Sprintf("Updating '%s' tank's, of group '%s', water level to %s",
-			tank, group, water_tank.ConvertCapacityToLiters(currentLevel)),
+			tank, group, ports.ConvertCapacityToLiters(currentLevel)),
 	)
 
-	update := update_tank_state.NewWaterTankUpdate(controller.tank)
-
-	usecaseErr := update.Update(tank, group, accessToken, currentLevel)
+	usecaseErr := controller.updateTankUsecase.Update(tank, group, accessToken, currentLevel)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
@@ -89,10 +97,53 @@ func (controller *Controller) Update(tank string, group string, accessToken acce
 	return
 }
 
-func (controller *Controller) Get(tank string, group string) (response *ControllerResponse, err error) {
-	return controller.externalMethods.Get(tank, group)
+func (controller *InternalController) Get(tank string, group string) (response *ControllerResponse, err error) {
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank, of group '%s' state...", tank, group))
+
+	usecaseResponse, usecaseErr := controller.getTankUsecase.Get(tank, group)
+
+	if usecaseErr.HasError() {
+		switch usecaseErr.EntityError() {
+		case nil:
+			response = NewControllerError(WaterTankNotFound, usecaseErr.LastError().Error())
+		default:
+			response = NewControllerError(WaterTankInternalServerError, usecaseErr.LastError().Error())
+		}
+
+		err = usecaseErr.LastError()
+		logs.Gateway().Error(err.Error())
+		return
+	}
+
+	response = NewControllerResponse(WaterTankOK, usecaseResponse)
+
+	return
 }
 
-func (controller *Controller) GetGroup(group string) (response *ControllerResponse, err error) {
-	return controller.externalMethods.GetGroup(group)
+func (controller *InternalController) GetGroup(group string) (response *ControllerResponse, err error) {
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", group))
+
+	usecaseResponse, usecaseErr := controller.getGroupUsecase.Get(group)
+
+	if usecaseErr.HasError() {
+		switch usecaseErr.EntityError() {
+		case nil:
+			useCase := usecaseErr.LastError()
+			if useCase == get_group.ErrWaterTankMissingGroup {
+				response = NewControllerError(WaterTankBadRequest, usecaseErr.LastError().Error())
+				return
+			}
+			response = NewControllerError(WaterTankNotFound, usecaseErr.LastError().Error())
+		default:
+			response = NewControllerError(WaterTankInternalServerError, usecaseErr.LastError().Error())
+		}
+
+		err = usecaseErr.LastError()
+		logs.Gateway().Error(err.Error())
+		return
+	}
+
+	response = NewControllerGroupResponse(WaterTankOK, usecaseResponse)
+
+	return
 }

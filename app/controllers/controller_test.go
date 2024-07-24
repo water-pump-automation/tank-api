@@ -6,17 +6,34 @@ import (
 	"testing"
 	"time"
 	"water-tank-api/app/core/entity/logs"
-	"water-tank-api/app/core/entity/water_tank"
+	"water-tank-api/app/core/usecases/create_tank"
 	register_tank "water-tank-api/app/core/usecases/create_tank"
 	"water-tank-api/app/core/usecases/get_group"
 	"water-tank-api/app/core/usecases/get_tank"
+	"water-tank-api/app/core/usecases/ports"
 	update_tank_state "water-tank-api/app/core/usecases/update_tank_state"
-	database_mock "water-tank-api/app/infra/database/mock"
+	database_mock "water-tank-api/infra/database/mock"
 )
 
 func Test_Controller_Create(t *testing.T) {
-	var successController = NewController(database_mock.NewWaterTankMockData())
-	var failController = NewController(database_mock.NewWaterTankFailMockData())
+	successDB := database_mock.NewWaterTankMockData()
+	failDB := database_mock.NewWaterTankFailMockData()
+
+	getSuccess := get_tank.NewGetWaterTank(successDB)
+	getFail := get_tank.NewGetWaterTank(failDB)
+
+	var successController = NewInternalController(
+		getSuccess,
+		get_group.NewGetGroupWaterTank(successDB),
+		create_tank.NewWaterTank(successDB, getSuccess),
+		update_tank_state.NewWaterTankUpdate(successDB, getSuccess),
+	)
+	var failController = NewInternalController(
+		getFail,
+		get_group.NewGetGroupWaterTank(failDB),
+		create_tank.NewWaterTank(failDB, getFail),
+		update_tank_state.NewWaterTankUpdate(failDB, getFail),
+	)
 	logs.SetLogger(&_empty{})
 
 	Test_Controller_Successful_Create := func(t *testing.T) {
@@ -67,8 +84,24 @@ func Test_Controller_Create(t *testing.T) {
 }
 
 func Test_Controller_Update(t *testing.T) {
-	var successController = NewController(database_mock.NewWaterTankMockData())
-	var failController = NewController(database_mock.NewWaterTankFailMockData())
+	successDB := database_mock.NewWaterTankMockData()
+	failDB := database_mock.NewWaterTankFailMockData()
+
+	getSuccess := get_tank.NewGetWaterTank(successDB)
+	getFail := get_tank.NewGetWaterTank(failDB)
+
+	var successController = NewInternalController(
+		getSuccess,
+		get_group.NewGetGroupWaterTank(successDB),
+		create_tank.NewWaterTank(successDB, getSuccess),
+		update_tank_state.NewWaterTankUpdate(successDB, getSuccess),
+	)
+	var failController = NewInternalController(
+		getFail,
+		get_group.NewGetGroupWaterTank(failDB),
+		create_tank.NewWaterTank(failDB, getFail),
+		update_tank_state.NewWaterTankUpdate(failDB, getFail),
+	)
 	logs.SetLogger(&_empty{})
 
 	Test_Controller_Successful_Update := func(t *testing.T) {
@@ -136,13 +169,29 @@ func Test_Controller_Update(t *testing.T) {
 }
 
 func Test_Controller_Get(t *testing.T) {
-	var successController = NewController(database_mock.NewWaterTankMockData())
-	var failController = NewController(database_mock.NewWaterTankFailMockData())
+	successDB := database_mock.NewWaterTankMockData()
+	failDB := database_mock.NewWaterTankFailMockData()
+
+	getSuccess := get_tank.NewGetWaterTank(successDB)
+	getFail := get_tank.NewGetWaterTank(failDB)
+
+	var successController = NewInternalController(
+		getSuccess,
+		get_group.NewGetGroupWaterTank(successDB),
+		create_tank.NewWaterTank(successDB, getSuccess),
+		update_tank_state.NewWaterTankUpdate(successDB, getSuccess),
+	)
+	var failController = NewInternalController(
+		getFail,
+		get_group.NewGetGroupWaterTank(failDB),
+		create_tank.NewWaterTank(failDB, getFail),
+		update_tank_state.NewWaterTankUpdate(failDB, getFail),
+	)
 	logs.SetLogger(&_empty{})
 
 	Test_Controller_Successful_Get := func(t *testing.T) {
 		t.Run("Successful get", func(t *testing.T) {
-			expectedReturn := NewControllerResponse(WaterTankOK, &water_tank.WaterTankState{
+			expectedReturn := NewControllerResponse(WaterTankOK, &ports.WaterTankState{
 				Name:              "TANK_1",
 				Group:             "GROUP_1",
 				MaximumCapacity:   "100.00L",
@@ -201,8 +250,24 @@ func Test_Controller_Get(t *testing.T) {
 }
 
 func Test_Controller_GetGroup(t *testing.T) {
-	var successController = NewController(database_mock.NewWaterTankMockData())
-	var failController = NewController(database_mock.NewWaterTankFailMockData())
+	successDB := database_mock.NewWaterTankMockData()
+	failDB := database_mock.NewWaterTankFailMockData()
+
+	getSuccess := get_tank.NewGetWaterTank(successDB)
+	getFail := get_tank.NewGetWaterTank(failDB)
+
+	var successController = NewInternalController(
+		getSuccess,
+		get_group.NewGetGroupWaterTank(successDB),
+		create_tank.NewWaterTank(successDB, getSuccess),
+		update_tank_state.NewWaterTankUpdate(successDB, getSuccess),
+	)
+	var failController = NewInternalController(
+		getFail,
+		get_group.NewGetGroupWaterTank(failDB),
+		create_tank.NewWaterTank(failDB, getFail),
+		update_tank_state.NewWaterTankUpdate(failDB, getFail),
+	)
 	logs.SetLogger(&_empty{})
 
 	Test_Controller_Successful_GetGroup := func(t *testing.T) {

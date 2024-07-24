@@ -4,6 +4,7 @@ import (
 	"time"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
+	"water-tank-api/app/core/usecases/ports"
 )
 
 type GetGroupWaterTank struct {
@@ -16,9 +17,9 @@ func NewGetGroupWaterTank(tank water_tank.WaterTankData) *GetGroupWaterTank {
 	}
 }
 
-func (conn *GetGroupWaterTank) Get(name string) (response *water_tank.WaterTankGroupState, err stack.ErrorStack) {
+func (conn *GetGroupWaterTank) Get(name string) (response *ports.WaterTankGroupState, err stack.ErrorStack) {
 	var states []*water_tank.WaterTank
-	response = new(water_tank.WaterTankGroupState)
+	response = new(ports.WaterTankGroupState)
 
 	if name != "" {
 		states, err = conn.tank.GetTankGroupState(name)
@@ -38,12 +39,12 @@ func (conn *GetGroupWaterTank) Get(name string) (response *water_tank.WaterTankG
 	}
 
 	for _, tank := range states {
-		state := new(water_tank.WaterTankState)
+		state := new(ports.WaterTankState)
 		state.Name = tank.Name
 		state.Group = tank.Group
-		state.MaximumCapacity = water_tank.ConvertCapacityToLiters(tank.MaximumCapacity)
-		state.TankState = water_tank.MapTankStateEnum(tank.TankState)
-		state.CurrentWaterLevel = water_tank.ConvertCapacityToLiters(tank.CurrentWaterLevel)
+		state.MaximumCapacity = ports.ConvertCapacityToLiters(tank.MaximumCapacity)
+		state.TankState = ports.MapTankStateEnum(tank.TankState)
+		state.CurrentWaterLevel = ports.ConvertCapacityToLiters(tank.CurrentWaterLevel)
 		state.LastFullTime = tank.LastFullTime
 
 		response.Tanks = append(response.Tanks, state)

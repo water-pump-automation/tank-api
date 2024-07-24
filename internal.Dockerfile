@@ -1,4 +1,4 @@
-FROM golang:1.19.2 as builder
+FROM golang:1.22 as builder
 
 WORKDIR /go/src/water-tank-api
 
@@ -6,7 +6,7 @@ COPY ./go.mod ./go.sum ./
 RUN go mod download && go mod verify
 
 COPY . ./
-RUN go build -v -o ./water-tank-api ./cmd/internal
+RUN go build -v -o ./water-tank-api ./
 
 FROM alpine:latest
 

@@ -47,25 +47,55 @@ docker-compose build water-tank-api-external-v1
 docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 ```
 
-## Infrastructure options
-
-### Presenter
-
-- [HTTP](infra/web/routes/routes_internal.go)
-
-### Logs
-
-- [Stdout](infra/stdout/stdout.go)
-
-### Database
-
-- [Mock](infra/database/mock/database_mock.go)
-
 ## Endpoints
 
-The endpoints' Postman collection can be downloaded at [Water-tank-api [v1].postman_collection.json](docs/postman_requests/Water-tank-api%20[v1].postman_collection.json).
 
-### /v1/water-tank/:name [GET]
+### [POST] /v1/water-tank/
+
+#### Response codes
+
+- `Ok (200)`
+- `Bad Request (400)`
+- `Unprocessable Entity (422)`
+
+#### Request body example
+``` json
+{
+    "name": "TANK_7",
+    "group": "GROUP_2",
+    "maximum_capacity": 45
+}
+```
+
+#### Response example
+``` json
+{
+    "access_token": "&e#&5C&F+zR726sHy9DaY&CftEX#Sinw" // example
+}
+```
+
+### [PATCH] /v1/water-tank/tank/*
+
+#### Response codes
+
+- `No Content (204)`
+- `Bad Request (400)`
+- `Not Found (404)`
+- `Unprocessable Entity (422)`
+
+#### Request header
+
+- `access_token`
+- `group`
+
+#### Request body example
+``` json
+{
+    "water_level": 10
+}
+```
+
+### [GET] /v1/water-tank/tank/*
 
 #### Response codes
 
@@ -91,7 +121,7 @@ The endpoints' Postman collection can be downloaded at [Water-tank-api [v1].post
 }
 ```
 
-### /v1/water-tank/group/:group [GET]
+### [GET] /v1/water-tank/group/*
 
 #### Response codes
 
@@ -129,51 +159,5 @@ The endpoints' Postman collection can be downloaded at [Water-tank-api [v1].post
             }
         ]
     }
-}
-```
-
-
-### /v1/water-tank/ [POST]
-
-#### Response codes
-
-- `Ok (200)`
-- `Bad Request (400)`
-- `Unprocessable Entity (422)`
-
-#### Request body example
-``` json
-{
-    "name": "TANK_7",
-    "group": "GROUP_2",
-    "maximum_capacity": 45
-}
-```
-
-#### Response example
-``` json
-{
-    "access_token": "<ACCESS_TOKEN>"
-}
-```
-
-### /v1/water-tank/:name [PATCH]
-
-#### Response codes
-
-- `No Content (204)`
-- `Bad Request (400)`
-- `Not Found (404)`
-- `Unprocessable Entity (422)`
-
-#### Request header
-
-- `access_token`
-- `group`
-
-#### Request body example
-``` json
-{
-    "water_level": 10
 }
 ```

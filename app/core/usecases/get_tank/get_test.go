@@ -5,13 +5,14 @@ import (
 	"testing"
 	"water-tank-api/app/core/entity/access"
 	"water-tank-api/app/core/entity/water_tank"
-	database_mock "water-tank-api/app/infra/database/mock"
+	"water-tank-api/app/core/usecases/ports"
+	database_mock "water-tank-api/infra/database/mock"
 )
 
 var successGetWaterTank = NewGetWaterTank(database_mock.NewWaterTankMockData())
 var failGetWaterTank = NewGetWaterTank(database_mock.NewWaterTankFailMockData())
 
-func responsesAreEqual(expected, got *water_tank.WaterTankState) (string, string, bool) {
+func responsesAreEqual(expected, got *ports.WaterTankState) (string, string, bool) {
 	if expected.Name != got.Name {
 		return "Name", got.Name, false
 	}
@@ -41,7 +42,7 @@ func responsesAreEqual(expected, got *water_tank.WaterTankState) (string, string
 
 func Test_GetWaterTank_Get(t *testing.T) {
 	t.Run("Succesful water_tank water tank", func(t *testing.T) {
-		expectedReturn := &water_tank.WaterTankState{
+		expectedReturn := &ports.WaterTankState{
 			Name:              "TANK_1",
 			Group:             "GROUP_1",
 			MaximumCapacity:   "100.00L",

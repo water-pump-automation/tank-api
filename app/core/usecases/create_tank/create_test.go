@@ -3,11 +3,14 @@ package create_tank
 import (
 	"errors"
 	"testing"
-	database_mock "water-tank-api/app/infra/database/mock"
+	"water-tank-api/app/core/usecases/get_tank"
+	database_mock "water-tank-api/infra/database/mock"
 )
 
-var successCreateTank = NewWaterTank(database_mock.NewWaterTankMockData())
-var failCreateTank = NewWaterTank(database_mock.NewWaterTankFailMockData())
+var successGetWaterTank = get_tank.NewGetWaterTank(database_mock.NewWaterTankMockData())
+
+var successCreateTank = NewWaterTank(database_mock.NewWaterTankMockData(), successGetWaterTank)
+var failCreateTank = NewWaterTank(database_mock.NewWaterTankFailMockData(), successGetWaterTank)
 
 func Test_WaterTank_Create(t *testing.T) {
 	t.Run("Succesful create water tank", func(t *testing.T) {
