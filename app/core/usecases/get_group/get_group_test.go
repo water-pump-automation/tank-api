@@ -3,15 +3,15 @@ package get_group
 import (
 	"errors"
 	"testing"
-	"water-tank-api/app/core/usecases"
-	database_mock "water-tank-api/app/infra/database/mock"
+	"water-tank-api/app/core/usecases/ports"
+	database_mock "water-tank-api/infra/database/mock"
 )
 
 var successGetWaterTank = NewGetGroupWaterTank(database_mock.NewWaterTankMockData())
 var failGetWaterTank = NewGetGroupWaterTank(database_mock.NewWaterTankFailMockData())
 
-func existsInResponse(expected, got *usecases.WaterTankGroupState) (string, bool) {
-	states := map[string]*usecases.WaterTankState{}
+func existsInResponse(expected, got *ports.WaterTankGroupState) (string, bool) {
+	states := map[string]*ports.WaterTankState{}
 
 	for _, gotState := range got.Tanks {
 		states[gotState.Name] = gotState
@@ -26,8 +26,8 @@ func existsInResponse(expected, got *usecases.WaterTankGroupState) (string, bool
 	return "", true
 }
 
-func responsesAreEqual(expected, got *usecases.WaterTankGroupState) (string, string, bool) {
-	states := map[string]*usecases.WaterTankState{}
+func responsesAreEqual(expected, got *ports.WaterTankGroupState) (string, string, bool) {
+	states := map[string]*ports.WaterTankState{}
 
 	for _, gotState := range got.Tanks {
 		states[gotState.Name] = gotState
@@ -66,8 +66,8 @@ func responsesAreEqual(expected, got *usecases.WaterTankGroupState) (string, str
 
 func Test_GetGroupWaterTank_Get(t *testing.T) {
 	t.Run("Succesful data water tank group", func(t *testing.T) {
-		expectedReturn := &usecases.WaterTankGroupState{
-			Tanks: []*usecases.WaterTankState{
+		expectedReturn := &ports.WaterTankGroupState{
+			Tanks: []*ports.WaterTankState{
 				{
 					Name:              "TANK_1",
 					Group:             "GROUP_1",

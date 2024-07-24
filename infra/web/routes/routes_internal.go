@@ -21,7 +21,7 @@ type PostBody struct {
 	MaximumCapacity water_tank.Capacity `json:"maximum_capacity"`
 }
 
-func (r *InternalRouter) Route(i *iris.Application, controller *controllers.Controller) {
+func (r *InternalRouter) Route(i *iris.Application, controller *controllers.InternalController) {
 	waterTankAPI := i.Party("/v1/water-tank")
 
 	i.Handle("ALL", "/*", func(ctx iris.Context) {

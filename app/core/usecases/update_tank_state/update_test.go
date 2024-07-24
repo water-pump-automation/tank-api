@@ -7,8 +7,11 @@ import (
 	"water-tank-api/app/core/entity/access"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
-	database_mock "water-tank-api/app/infra/database/mock"
+	"water-tank-api/app/core/usecases/get_tank"
+	database_mock "water-tank-api/infra/database/mock"
 )
+
+var successGetWaterTank = get_tank.NewGetWaterTank(database_mock.NewWaterTankMockData())
 
 type waterTankUpdateMockData struct {
 	states map[string]map[string]*water_tank.WaterTank
@@ -35,8 +38,8 @@ func NewWaterTankUpdateMockData() *waterTankUpdateMockData {
 	}
 }
 
-var successUpdateTank = NewWaterTankUpdate(updateMockDatabase)
-var failUpdateTank = NewWaterTankUpdate(database_mock.NewWaterTankFailMockData())
+var successUpdateTank = NewWaterTankUpdate(updateMockDatabase, successGetWaterTank)
+var failUpdateTank = NewWaterTankUpdate(database_mock.NewWaterTankFailMockData(), successGetWaterTank)
 
 func Test_WaterTank_Update(t *testing.T) {
 	t.Run("Succesful update water tank (filling)", func(t *testing.T) {

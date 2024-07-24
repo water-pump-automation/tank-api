@@ -3,27 +3,29 @@ package controllers
 import (
 	"fmt"
 	"water-tank-api/app/core/entity/logs"
-	"water-tank-api/app/core/entity/water_tank"
 	"water-tank-api/app/core/usecases/get_group"
 	"water-tank-api/app/core/usecases/get_tank"
 )
 
 type ExternalController struct {
-	tank water_tank.WaterTankData
+	getTankUsecase  *get_tank.GetWaterTank
+	getGroupUsecase *get_group.GetGroupWaterTank
 }
 
-func NewExternalController(tank water_tank.WaterTankData) *ExternalController {
+func NewExternalController(
+	getTankUsecase *get_tank.GetWaterTank,
+	getGroupUsecase *get_group.GetGroupWaterTank,
+) *ExternalController {
 	return &ExternalController{
-		tank: tank,
+		getTankUsecase:  getTankUsecase,
+		getGroupUsecase: getGroupUsecase,
 	}
 }
 
 func (controller *ExternalController) Get(tank string, group string) (response *ControllerResponse, err error) {
 	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank, of group '%s' state...", tank, group))
 
-	getUsecase := get_tank.NewGetWaterTank(controller.tank)
-
-	usecaseResponse, usecaseErr := getUsecase.Get(tank, group)
+	usecaseResponse, usecaseErr := controller.getTankUsecase.Get(tank, group)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {
@@ -46,9 +48,7 @@ func (controller *ExternalController) Get(tank string, group string) (response *
 func (controller *ExternalController) GetGroup(group string) (response *ControllerResponse, err error) {
 	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", group))
 
-	getUsecase := get_group.NewGetGroupWaterTank(controller.tank)
-
-	usecaseResponse, usecaseErr := getUsecase.Get(group)
+	usecaseResponse, usecaseErr := controller.getGroupUsecase.Get(group)
 
 	if usecaseErr.HasError() {
 		switch usecaseErr.EntityError() {

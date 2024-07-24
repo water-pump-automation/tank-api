@@ -1,4 +1,4 @@
-package create_tank
+package ports
 
 import (
 	"water-tank-api/app/core/entity/access"

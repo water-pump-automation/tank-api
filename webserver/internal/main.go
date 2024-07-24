@@ -9,9 +9,13 @@ import (
 
 	"water-tank-api/app/controllers"
 	"water-tank-api/app/core/entity/logs"
-	mongodb "water-tank-api/app/infra/database/mongoDB"
-	"water-tank-api/app/infra/logs/stdout"
-	"water-tank-api/app/infra/web/routes"
+	"water-tank-api/app/core/usecases/create_tank"
+	"water-tank-api/app/core/usecases/get_group"
+	"water-tank-api/app/core/usecases/get_tank"
+	"water-tank-api/app/core/usecases/update_tank_state"
+	mongodb "water-tank-api/infra/database/mongoDB"
+	"water-tank-api/infra/logs/stdout"
+	"water-tank-api/infra/web/routes"
 
 	iris "github.com/kataras/iris/v12"
 	"golang.org/x/sync/errgroup"
@@ -37,9 +41,18 @@ func main() {
 	collection := mongodb.NewCollection(mainCtx, mongoClient, databaseName, databaseCollection)
 
 	app := iris.New()
-	externalRouter := routes.ExternalRouter{}
+	internalRouter := routes.InternalRouter{}
+	getTankUsecase := get_tank.NewGetWaterTank(collection)
 
-	externalRouter.Route(app, controllers.NewController(collection))
+	internalRouter.Route(
+		app,
+		controllers.NewInternalController(
+			getTankUsecase,
+			get_group.NewGetGroupWaterTank(collection),
+			create_tank.NewWaterTank(collection, getTankUsecase),
+			update_tank_state.NewWaterTankUpdate(collection, getTankUsecase),
+		),
+	)
 
 	go func() {
 		if err := app.Run(iris.Addr(fmt.Sprintf(":%s", port))); err != nil {

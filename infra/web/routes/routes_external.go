@@ -8,7 +8,7 @@ import (
 
 type ExternalRouter struct{}
 
-func (r *ExternalRouter) Route(i *iris.Application, controller *controllers.Controller) {
+func (r *ExternalRouter) Route(i *iris.Application, controller *controllers.ExternalController) {
 	waterTankAPI := i.Party("/v1/water-tank")
 
 	i.Handle("ALL", "/*", func(ctx iris.Context) {

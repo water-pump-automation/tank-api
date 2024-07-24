@@ -5,18 +5,18 @@ import (
 	"water-tank-api/app/core/entity/access"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
-	"water-tank-api/app/core/usecases/get_tank"
+	"water-tank-api/app/core/usecases/ports"
 )
 
 type UpdateWaterTank struct {
 	tank       water_tank.WaterTankData
-	getUsecase GetUsecase
+	getUsecase ports.GetUsecase
 }
 
-func NewWaterTankUpdate(tank water_tank.WaterTankData) *UpdateWaterTank {
+func NewWaterTankUpdate(tank water_tank.WaterTankData, getUsecase ports.GetUsecase) *UpdateWaterTank {
 	return &UpdateWaterTank{
 		tank:       tank,
-		getUsecase: get_tank.NewGetWaterTank(tank),
+		getUsecase: getUsecase,
 	}
 }
 
