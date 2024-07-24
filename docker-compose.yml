@@ -1,17 +1,42 @@
-version: '2'
+version: '3.1'
 
 services:
-  water-tank-api-internal-v1:
+  internal-v1:
+    env_file:
+      - .env
+    environment:
+      - SERVER_API=INTERNAL
     build:
       context: .
       dockerfile: internal.Dockerfile
     image: lo-han/water-tank-api-internal:latest
     ports:
       - "8081:8080"
-  water-tank-api-external-v1:
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  external-v1:
+    env_file:
+      - .env
+    environment:
+      - SERVER_API=EXTERNAL
     build: 
       context: .
       dockerfile: external.Dockerfile
     image: lo-han/water-tank-api-external:latest
     ports:
       - "8082:8080"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongo:27017/test --quiet
+
