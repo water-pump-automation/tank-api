@@ -1,53 +1,53 @@
 package get_tank
 
 import (
+	"context"
 	"time"
-	"water-tank-api/app/core/entity/access"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
 	"water-tank-api/app/core/usecases/ports"
 )
 
 type GetWaterTank struct {
-	tank water_tank.WaterTankData
+	tank water_tank.IWaterTankDatabase
 }
 
-func NewGetWaterTank(tank water_tank.WaterTankData) *GetWaterTank {
+func NewGetWaterTank(tank water_tank.IWaterTankDatabase) *GetWaterTank {
 	return &GetWaterTank{
 		tank: tank,
 	}
 }
 
-func (conn *GetWaterTank) GetData(tank string, group string) (MaximumCapacity water_tank.Capacity, accessToken access.AccessToken, err stack.ErrorStack) {
+func (conn *GetWaterTank) GetMaximumCapacity(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankState) (maximumCapacity water_tank.Capacity, err stack.Error) {
 	var state *water_tank.WaterTank
-	state, err = conn.tank.GetWaterTankState(group, tank)
+	state, err = conn.tank.GetWaterTankState(ctx, connection, input)
 
 	if err.HasError() {
-		err.Append(ErrWaterTankErrorServerError(err.EntityError().Error()))
+		err.AppendUsecaseError(ErrWaterTankErrorServerError(err.EntityError().Error()))
 		return
 	}
 
 	if state == nil {
-		err.Append(ErrWaterTankErrorNotFound(tank))
+		err.AppendUsecaseError(ErrWaterTankErrorNotFound(input.TankName))
 		return
 	}
 
-	return state.MaximumCapacity, state.Access, err
+	return state.MaximumCapacity, err
 }
 
-func (conn *GetWaterTank) Get(name string, group string) (response *ports.WaterTankState, err stack.ErrorStack) {
+func (conn *GetWaterTank) Get(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankState) (response *ports.WaterTankState, err stack.Error) {
 	response = new(ports.WaterTankState)
 	var state *water_tank.WaterTank
 
-	state, err = conn.tank.GetWaterTankState(group, name)
+	state, err = conn.tank.GetWaterTankState(ctx, connection, input)
 
 	if err.HasError() {
-		err.Append(ErrWaterTankErrorServerError(err.EntityError().Error()))
+		err.AppendUsecaseError(ErrWaterTankErrorServerError(err.EntityError().Error()))
 		return
 	}
 
 	if state == nil {
-		err.Append(ErrWaterTankErrorNotFound(name))
+		err.AppendUsecaseError(ErrWaterTankErrorNotFound(input.TankName))
 		return
 	}
 

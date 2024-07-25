@@ -3,7 +3,7 @@ package web
 import (
 	"encoding/json"
 	"net/http"
-	"water-tank-api/app/controllers"
+	"water-tank-api/app/controllers/response"
 )
 
 func getBody(writer http.ResponseWriter, request *http.Request, body any) error {
@@ -23,7 +23,7 @@ func getBody(writer http.ResponseWriter, request *http.Request, body any) error 
 
 	err = json.Unmarshal(bodyBytes, &body)
 	if err != nil {
-		responseError := controllers.NewControllerError(controllers.WaterTankBadRequest, "Bad request. Wrong type parameter")
+		responseError := response.NewControllerError(response.WaterTankBadRequest, "Bad request. Wrong type parameter")
 		response, err := json.Marshal(responseError)
 		if err != nil {
 			internalServerError(writer)

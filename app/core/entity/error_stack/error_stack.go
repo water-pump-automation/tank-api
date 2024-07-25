@@ -7,20 +7,16 @@ type _err struct {
 	err   error
 }
 
-type ErrorStack struct {
+type Error struct {
 	errors        map[string]_err
 	usecaseErrors int
 }
 
-func (stack *ErrorStack) HasError() bool {
-	if len(stack.errors) > 0 {
-		return true
-	}
-
-	return false
+func (stack *Error) HasError() bool {
+	return len(stack.errors) > 0
 }
 
-func (stack *ErrorStack) AddEntityError(err error) {
+func (stack *Error) AddEntityError(err error) {
 	if stack.errors == nil {
 		stack.errors = make(map[string]_err)
 	}
@@ -34,7 +30,7 @@ func (stack *ErrorStack) AddEntityError(err error) {
 	}
 }
 
-func (stack *ErrorStack) EntityError() (err error) {
+func (stack *Error) EntityError() (err error) {
 	if stack.errors == nil {
 		stack.errors = make(map[string]_err)
 	}
@@ -45,7 +41,7 @@ func (stack *ErrorStack) EntityError() (err error) {
 	return nil
 }
 
-func (stack *ErrorStack) Append(err error) {
+func (stack *Error) AppendUsecaseError(err error) {
 	if stack.errors == nil {
 		stack.errors = make(map[string]_err)
 	}
@@ -59,7 +55,7 @@ func (stack *ErrorStack) Append(err error) {
 	}
 }
 
-func (stack *ErrorStack) LastError() (err error) {
+func (stack *Error) LastUsecaseError() (err error) {
 	if stack.errors == nil {
 		stack.errors = make(map[string]_err)
 	}
@@ -75,7 +71,7 @@ func (stack *ErrorStack) LastError() (err error) {
 	return nil
 }
 
-func (stack *ErrorStack) PopError() (err error) {
+func (stack *Error) PopUsecaseError() (err error) {
 	if stack.errors == nil {
 		stack.errors = make(map[string]_err)
 	}

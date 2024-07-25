@@ -1,10 +1,10 @@
 package web
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"water-tank-api/app/controllers"
-	"water-tank-api/app/core/entity/access"
 	"water-tank-api/app/core/entity/water_tank"
 )
 
@@ -60,32 +60,19 @@ func (r *InternalRouter) Route(mux *http.ServeMux, controller *controllers.Inter
 }
 
 func createTankInternal(controller *controllers.InternalController, writer http.ResponseWriter, request *http.Request) {
-	type PostBody struct {
-		Name            string              `json:"name"`
-		Group           string              `json:"group"`
-		MaximumCapacity water_tank.Capacity `json:"maximum_capacity"`
-	}
+	var input water_tank.CreateInput
 
-	var body PostBody
+	ctx := context.Background()
 
-	if err := getBody(writer, request, &body); err != nil {
+	if err := getBody(writer, request, &input); err != nil {
 		return
 	}
 
-	response, _ := controller.Create(body.Name, body.Group, body.MaximumCapacity)
+	resp, _ := controller.Create(ctx, nil, &input)
 
-	switch response.Code {
-	case controllers.WaterTankBadRequest:
-		writer.WriteHeader(http.StatusBadRequest)
-	case controllers.WaterTankInvalidRequest:
-		writer.WriteHeader(http.StatusUnprocessableEntity)
-	case controllers.WaterTankInternalServerError:
-		writer.WriteHeader(http.StatusInternalServerError)
-	case controllers.WaterTankOK:
-		writer.WriteHeader(http.StatusOK)
-	}
+	writer.WriteHeader(mapError(resp.Code))
 
-	responseBytes, err := json.Marshal(response)
+	responseBytes, err := json.Marshal(resp)
 	if err != nil {
 		internalServerError(writer)
 		return
@@ -94,33 +81,25 @@ func createTankInternal(controller *controllers.InternalController, writer http.
 }
 
 func updateTankInternal(controller *controllers.InternalController, writer http.ResponseWriter, request *http.Request) {
-	type PatchBody struct {
-		CurrentWaterLevel water_tank.Capacity `json:"water_level"`
-	}
-	var body PatchBody
+	var input water_tank.UpdateWaterLevelInput
+
+	ctx := context.Background()
 
 	tankName := request.PathValue("tank")
-	accessToken := request.Header.Get("access_token")
 	group := request.Header.Get("group")
 
-	if err := getBody(writer, request, &body); err != nil {
+	if err := getBody(writer, request, &input); err != nil {
 		return
 	}
 
-	response, _ := controller.Update(tankName, group, access.AccessToken(accessToken), body.CurrentWaterLevel)
+	input.Group = group
+	input.TankName = tankName
 
-	switch response.Code {
-	case controllers.WaterTankBadRequest:
-		writer.WriteHeader(http.StatusBadRequest)
-	case controllers.WaterTankInvalidRequest:
-		writer.WriteHeader(http.StatusUnprocessableEntity)
-	case controllers.WaterTankInternalServerError:
-		writer.WriteHeader(http.StatusInternalServerError)
-	case controllers.WaterTankOK:
-		writer.WriteHeader(http.StatusNoContent)
-	}
+	resp, _ := controller.Update(ctx, nil, &input)
 
-	responseBytes, err := json.Marshal(response)
+	writer.WriteHeader(mapError(resp.Code))
+
+	responseBytes, err := json.Marshal(resp)
 	if err != nil {
 		internalServerError(writer)
 		return
@@ -129,21 +108,19 @@ func updateTankInternal(controller *controllers.InternalController, writer http.
 }
 
 func getTankInternal(controller *controllers.InternalController, writer http.ResponseWriter, request *http.Request) {
+	ctx := context.Background()
+
 	tankName := request.PathValue("tank")
 	groupName := request.Header.Get("group")
 
-	response, _ := controller.Get(tankName, groupName)
+	resp, _ := controller.Get(ctx, nil, &water_tank.GetWaterTankState{
+		TankName: tankName,
+		Group:    groupName,
+	})
 
-	switch response.Code {
-	case controllers.WaterTankNotFound:
-		writer.WriteHeader(http.StatusNotFound)
-	case controllers.WaterTankInternalServerError:
-		writer.WriteHeader(http.StatusInternalServerError)
-	case controllers.WaterTankOK:
-		writer.WriteHeader(http.StatusOK)
-	}
+	writer.WriteHeader(mapError(resp.Code))
 
-	responseBytes, err := json.Marshal(response)
+	responseBytes, err := json.Marshal(resp)
 	if err != nil {
 		writer.Write([]byte("Internal server error"))
 	}
@@ -152,20 +129,16 @@ func getTankInternal(controller *controllers.InternalController, writer http.Res
 }
 
 func getGroupInternal(controller *controllers.InternalController, writer http.ResponseWriter, request *http.Request) {
+	ctx := context.Background()
 	groupName := request.PathValue("group")
 
-	response, _ := controller.GetGroup(groupName)
+	resp, _ := controller.GetGroup(ctx, nil, &water_tank.GetGroupTanks{
+		Group: groupName,
+	})
 
-	switch response.Code {
-	case controllers.WaterTankNotFound:
-		writer.WriteHeader(http.StatusNotFound)
-	case controllers.WaterTankInternalServerError:
-		writer.WriteHeader(http.StatusInternalServerError)
-	case controllers.WaterTankOK:
-		writer.WriteHeader(http.StatusOK)
-	}
+	writer.WriteHeader(mapError(resp.Code))
 
-	responseBytes, err := json.Marshal(response)
+	responseBytes, err := json.Marshal(resp)
 	if err != nil {
 		writer.Write([]byte("Internal server error"))
 	}

@@ -1,8 +1,8 @@
 package database_mock
 
 import (
+	"context"
 	"errors"
-	"water-tank-api/app/core/entity/access"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
 )
@@ -13,22 +13,22 @@ func NewWaterTankFailMockData() *WaterTankFailMockData {
 	return &WaterTankFailMockData{}
 }
 
-func (tank *WaterTankFailMockData) GetWaterTankState(group string, names ...string) (state *water_tank.WaterTank, err stack.ErrorStack) {
+func (tank *WaterTankFailMockData) GetWaterTankState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankState) (state *water_tank.WaterTank, err stack.Error) {
 	err.AddEntityError(errors.New("ERROR"))
 	return
 }
 
-func (tank *WaterTankFailMockData) GetTankGroupState(groups ...string) (state []*water_tank.WaterTank, err stack.ErrorStack) {
+func (tank *WaterTankFailMockData) GetTankGroupState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanks) (state []*water_tank.WaterTank, err stack.Error) {
 	err.AddEntityError(errors.New("ERROR"))
 	return
 }
 
-func (tank *WaterTankFailMockData) CreateWaterTank(name string, group string, accessToken access.AccessToken, capacity water_tank.Capacity) (err stack.ErrorStack) {
+func (tank *WaterTankFailMockData) CreateWaterTank(ctx context.Context, connection water_tank.IConn, input *water_tank.CreateInput) (tankState *water_tank.WaterTank, err stack.Error) {
 	err.AddEntityError(errors.New("ERROR"))
 	return
 }
 
-func (tank *WaterTankFailMockData) UpdateWaterTankState(name string, group string, waterLevel water_tank.Capacity, levelState water_tank.State) (state *water_tank.WaterTank, err stack.ErrorStack) {
+func (tank *WaterTankFailMockData) UpdateTankWaterLevel(ctx context.Context, connection water_tank.IConn, input *water_tank.UpdateWaterLevelInput) (state *water_tank.WaterTank, err stack.Error) {
 	err.AddEntityError(errors.New("ERROR"))
 	return
 }

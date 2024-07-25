@@ -21,7 +21,7 @@ func NewSTDOutLogger() *STDOutLogger {
 	}
 }
 
-func (logger *STDOutLogger) Context(ctx context.Context) logs.Logger {
+func (logger *STDOutLogger) Context(ctx context.Context) logs.ILogger {
 	return &STDOutLogger{}
 }
 

@@ -5,17 +5,17 @@ import (
 	"time"
 )
 
-type Logger interface {
-	Context(ctx context.Context) Logger
+type ILogger interface {
+	Context(ctx context.Context) ILogger
 	Error(message string) time.Time
 	Fatal(message string) time.Time
 	Info(message string) time.Time
 }
 
-var loggerGateway Logger = nil
-var emptyLogger Logger = &_empty{}
+var loggerGateway ILogger = nil
+var emptyLogger ILogger = &_empty{}
 
-func SetLogger(logger Logger) (err error) {
+func SetLogger(logger ILogger) (err error) {
 	if loggerGateway == nil {
 		loggerGateway = logger
 	}
@@ -23,7 +23,7 @@ func SetLogger(logger Logger) (err error) {
 	return WaterTankErrorLoggerAlreadyInitialized
 }
 
-func Gateway() Logger {
+func Gateway() ILogger {
 	if loggerGateway != nil {
 		return loggerGateway
 	}
@@ -33,7 +33,7 @@ func Gateway() Logger {
 type _empty struct {
 }
 
-func (logger *_empty) Context(ctx context.Context) Logger {
+func (logger *_empty) Context(ctx context.Context) ILogger {
 	return &_empty{}
 }
 

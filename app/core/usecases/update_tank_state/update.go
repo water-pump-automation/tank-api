@@ -1,66 +1,62 @@
 package update_tank_state
 
 import (
-	"water-tank-api/app/core/entity/access"
+	"context"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
 	"water-tank-api/app/core/usecases/ports"
 )
 
 type UpdateWaterTank struct {
-	tank       water_tank.WaterTankData
-	getUsecase ports.GetUsecase
+	tank       water_tank.IWaterTankDatabase
+	getUsecase ports.IGetCapacity
 }
 
-func NewWaterTankUpdate(tank water_tank.WaterTankData, getUsecase ports.GetUsecase) *UpdateWaterTank {
+func NewWaterTankUpdate(tank water_tank.IWaterTankDatabase, getUsecase ports.IGetCapacity) *UpdateWaterTank {
 	return &UpdateWaterTank{
 		tank:       tank,
 		getUsecase: getUsecase,
 	}
 }
 
-func (conn *UpdateWaterTank) Update(tank string, group string, accessToken access.AccessToken, currentLevel water_tank.Capacity) (err stack.ErrorStack) {
+func (conn *UpdateWaterTank) Update(ctx context.Context, connection water_tank.IConn, input *water_tank.UpdateWaterLevelInput) (err stack.Error) {
 	var maximumCapacity water_tank.Capacity
-	var fillState water_tank.State
-	var existingAccessToken access.AccessToken
 
-	maximumCapacity, existingAccessToken, err = conn.getUsecase.GetData(tank, group)
+	maximumCapacity, err = conn.getUsecase.GetMaximumCapacity(ctx, connection, &water_tank.GetWaterTankState{
+		TankName: input.TankName,
+		Group:    input.Group,
+	})
 
 	if err.HasError() {
 		if entity := err.EntityError(); entity != nil {
-			err.Append(ErrWaterTankErrorServerError(entity.Error()))
+			err.AppendUsecaseError(ErrWaterTankErrorServerError(entity.Error()))
 			return
 		}
 
-		err.Append(ErrWaterTankErrorNotFound(tank))
+		err.AppendUsecaseError(ErrWaterTankErrorNotFound(input.TankName))
 		return
 	}
 
-	if currentLevel < 0 {
-		err.Append(ErrWaterTankCurrentWaterLevelSmallerThanZero)
+	if input.NewWaterLevel < 0 {
+		err.AppendUsecaseError(ErrWaterTankCurrentWaterLevelSmallerThanZero)
 		return
 	}
 
-	if currentLevel > maximumCapacity {
-		err.Append(ErrWaterTankCurrentWaterLevelBiggerThanMax)
+	if input.NewWaterLevel > maximumCapacity {
+		err.AppendUsecaseError(ErrWaterTankCurrentWaterLevelBiggerThanMax)
 		return
-	} else if currentLevel == maximumCapacity {
-		fillState = water_tank.Full
-	} else if currentLevel == 0 {
-		fillState = water_tank.Empty
-	} else if currentLevel < maximumCapacity {
-		fillState = water_tank.Filling
+	} else if input.NewWaterLevel == maximumCapacity {
+		input.State = water_tank.Full
+	} else if input.NewWaterLevel == 0 {
+		input.State = water_tank.Empty
+	} else if input.NewWaterLevel < maximumCapacity {
+		input.State = water_tank.Filling
 	}
 
-	if accessToken != existingAccessToken {
-		err.Append(ErrWaterTankInvalidToken)
-		return
-	}
-
-	_, updateErr := conn.tank.UpdateWaterTankState(tank, group, currentLevel, fillState)
+	_, updateErr := conn.tank.UpdateTankWaterLevel(ctx, connection, input)
 
 	if updateErr.HasError() {
-		err.Append(ErrWaterTankErrorServerError(updateErr.EntityError().Error()))
+		err.AppendUsecaseError(ErrWaterTankErrorServerError(updateErr.EntityError().Error()))
 		return
 	}
 

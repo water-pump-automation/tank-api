@@ -1,56 +1,64 @@
 package create_tank
 
 import (
-	"water-tank-api/app/core/entity/access"
+	"context"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
 	"water-tank-api/app/core/usecases/ports"
 )
 
 type CreateWaterTank struct {
-	tank       water_tank.WaterTankData
-	getUsecase ports.GetUsecase
+	tank       water_tank.IWaterTankDatabase
+	getUsecase ports.IGetCapacity
 }
 
-func NewWaterTank(tank water_tank.WaterTankData, getUsecase ports.GetUsecase) *CreateWaterTank {
+func NewWaterTank(tank water_tank.IWaterTankDatabase, getUsecase ports.IGetCapacity) *CreateWaterTank {
 	return &CreateWaterTank{
 		tank:       tank,
 		getUsecase: getUsecase,
 	}
 }
 
-func (conn *CreateWaterTank) Create(tank string, group string, capacity water_tank.Capacity) (accessToken access.AccessToken, err stack.ErrorStack) {
-	_, _, err = conn.getUsecase.GetData(tank, group)
+func (conn *CreateWaterTank) Create(ctx context.Context, connection water_tank.IConn, input *water_tank.CreateInput) (response *ports.WaterTankState, err stack.Error) {
+	response = new(ports.WaterTankState)
+	_, err = conn.getUsecase.GetMaximumCapacity(ctx, connection, &water_tank.GetWaterTankState{
+		TankName: input.TankName,
+		Group:    input.Group,
+	})
 
 	if !err.HasError() {
-		err.Append(ErrWaterTankAlreadyExists)
+		err.AppendUsecaseError(ErrWaterTankAlreadyExists)
+		return
+	}
+	err.PopUsecaseError()
+
+	if input.MaximumCapacity <= 0 {
+		err.AppendUsecaseError(ErrWaterTankMaximumCapacityZero)
 		return
 	}
 
-	err.PopError()
-
-	if capacity <= 0 {
-		err.Append(ErrWaterTankMaximumCapacityZero)
+	if input.TankName == "" {
+		err.AppendUsecaseError(ErrWaterTankInvalidName)
 		return
 	}
 
-	if tank == "" {
-		err.Append(ErrWaterTankInvalidName)
+	if input.Group == "" {
+		err.AppendUsecaseError(ErrWaterTankInvalidGroup)
 		return
 	}
 
-	if group == "" {
-		err.Append(ErrWaterTankInvalidGroup)
-		return
-	}
-
-	accessToken = access.GenerateAccessToken()
-
-	createErr := conn.tank.CreateWaterTank(tank, group, accessToken, capacity)
+	tankSate, createErr := conn.tank.CreateWaterTank(ctx, connection, input)
 
 	if createErr.HasError() {
-		err.Append(ErrWaterTankErrorServerError(createErr.EntityError().Error()))
+		err.AppendUsecaseError(ErrWaterTankErrorServerError(createErr.EntityError().Error()))
 	}
+
+	response.Name = tankSate.Name
+	response.Group = tankSate.Group
+	response.MaximumCapacity = ports.ConvertCapacityToLiters(tankSate.MaximumCapacity)
+	response.TankState = ports.MapTankStateEnum(tankSate.TankState)
+	response.CurrentWaterLevel = ports.ConvertCapacityToLiters(tankSate.CurrentWaterLevel)
+	response.LastFullTime = tankSate.LastFullTime
 
 	return
 }

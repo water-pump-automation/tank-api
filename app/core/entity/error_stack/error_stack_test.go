@@ -11,7 +11,7 @@ var mockUsecaseError2 = errors.New("usecase2 error")
 
 func Test_ErrorStack_HasError(t *testing.T) {
 	Test_ErrorStack_HasEntityError := func(t *testing.T) {
-		stack := ErrorStack{}
+		stack := Error{}
 		stack.AddEntityError(mockEntityErr)
 
 		t.Run("Check if has entity error", func(t *testing.T) {
@@ -22,8 +22,8 @@ func Test_ErrorStack_HasError(t *testing.T) {
 	}
 
 	Test_ErrorStack_HasUsecaseError := func(t *testing.T) {
-		stack := ErrorStack{}
-		stack.Append(mockUsecaseError)
+		stack := Error{}
+		stack.AppendUsecaseError(mockUsecaseError)
 
 		t.Run("Check if has usecase error", func(t *testing.T) {
 			if !stack.HasError() {
@@ -33,8 +33,8 @@ func Test_ErrorStack_HasError(t *testing.T) {
 	}
 
 	Test_ErrorStack_DoesntHaveErrorDueToPop := func(t *testing.T) {
-		stack := ErrorStack{}
-		stack.Append(mockUsecaseError)
+		stack := Error{}
+		stack.AppendUsecaseError(mockUsecaseError)
 
 		t.Run("Check if has usecase error", func(t *testing.T) {
 			if !stack.HasError() {
@@ -42,7 +42,7 @@ func Test_ErrorStack_HasError(t *testing.T) {
 			}
 		})
 
-		stack.PopError()
+		stack.PopUsecaseError()
 		t.Run("Check if has has cleared usecase errors", func(t *testing.T) {
 			if stack.HasError() {
 				t.Error("Test_ErrorStack_DoesntHaveErrorDueToPop() shouldn't report an error, but it have")
@@ -51,7 +51,7 @@ func Test_ErrorStack_HasError(t *testing.T) {
 	}
 
 	Test_ErrorStack_DoesHaveErrorAfterPop := func(t *testing.T) {
-		stack := ErrorStack{}
+		stack := Error{}
 		stack.AddEntityError(mockUsecaseError)
 
 		t.Run("Check if has usecase error", func(t *testing.T) {
@@ -60,7 +60,7 @@ func Test_ErrorStack_HasError(t *testing.T) {
 			}
 		})
 
-		stack.PopError()
+		stack.PopUsecaseError()
 		t.Run("Check if has has cleared usecase errors", func(t *testing.T) {
 			if !stack.HasError() {
 				t.Error("Test_ErrorStack_DoesHaveErrorAfterPop() shouldn't report an error, but it have")
@@ -76,8 +76,8 @@ func Test_ErrorStack_HasError(t *testing.T) {
 
 func Test_ErrorStack_PopError(t *testing.T) {
 	Test_ErrorStack_SuccessfulPop := func(t *testing.T) {
-		stack := ErrorStack{}
-		stack.Append(mockUsecaseError)
+		stack := Error{}
+		stack.AppendUsecaseError(mockUsecaseError)
 
 		t.Run("Check if has usecase error", func(t *testing.T) {
 			if !stack.HasError() {
@@ -86,7 +86,7 @@ func Test_ErrorStack_PopError(t *testing.T) {
 		})
 
 		t.Run("Check if has error returned is correct", func(t *testing.T) {
-			err := stack.PopError()
+			err := stack.PopUsecaseError()
 			if err != mockUsecaseError {
 				t.Errorf("Test_ErrorStack_SuccessfulPop() returned '%s', when it should return '%s'", err.Error(), mockUsecaseError.Error())
 			}
@@ -94,9 +94,9 @@ func Test_ErrorStack_PopError(t *testing.T) {
 	}
 
 	Test_ErrorStack_MultipleSuccessfulPop := func(t *testing.T) {
-		stack := ErrorStack{}
-		stack.Append(mockUsecaseError)
-		stack.Append(mockUsecaseError2)
+		stack := Error{}
+		stack.AppendUsecaseError(mockUsecaseError)
+		stack.AppendUsecaseError(mockUsecaseError2)
 
 		t.Run("Check if has usecase error", func(t *testing.T) {
 			if !stack.HasError() {
@@ -104,8 +104,8 @@ func Test_ErrorStack_PopError(t *testing.T) {
 			}
 		})
 
-		err1 := stack.PopError()
-		err2 := stack.PopError()
+		err1 := stack.PopUsecaseError()
+		err2 := stack.PopUsecaseError()
 		t.Run("Check if err1 is correct", func(t *testing.T) {
 			if err1 != mockUsecaseError2 {
 				t.Errorf("Test_ErrorStack_MultipleSuccessfulPop() returned '%s', when it should return '%s'", err1.Error(), mockUsecaseError2.Error())
@@ -121,9 +121,9 @@ func Test_ErrorStack_PopError(t *testing.T) {
 	}
 
 	Test_ErrorStack_ErrorRemovalFromStack := func(t *testing.T) {
-		stack := ErrorStack{}
-		stack.Append(mockUsecaseError)
-		stack.Append(mockUsecaseError2)
+		stack := Error{}
+		stack.AppendUsecaseError(mockUsecaseError)
+		stack.AppendUsecaseError(mockUsecaseError2)
 
 		t.Run("Check if has usecase error", func(t *testing.T) {
 			if !stack.HasError() {
@@ -131,7 +131,7 @@ func Test_ErrorStack_PopError(t *testing.T) {
 			}
 		})
 
-		err1 := stack.PopError()
+		err1 := stack.PopUsecaseError()
 		t.Run("Check if err1 is correct", func(t *testing.T) {
 			if err1 != mockUsecaseError2 {
 				t.Errorf("Test_ErrorStack_ErrorRemovalFromStack() returned '%s', when it should return '%s'", err1.Error(), mockUsecaseError2.Error())
@@ -150,7 +150,7 @@ func Test_ErrorStack_PopError(t *testing.T) {
 			}
 		})
 
-		err2 := stack.PopError()
+		err2 := stack.PopUsecaseError()
 		t.Run("Check if err2 is correct", func(t *testing.T) {
 			if err2 != mockUsecaseError {
 				t.Errorf("Test_ErrorStack_ErrorRemovalFromStack() returned '%s', when it should return '%s'", err2.Error(), mockUsecaseError.Error())
@@ -177,11 +177,11 @@ func Test_ErrorStack_PopError(t *testing.T) {
 
 func Test_ErrorStack_AppendAndRetrieve(t *testing.T) {
 	Test_ErrorStack_ReturnedCorrectLastError_UsecaseOnly := func(t *testing.T) {
-		stack := ErrorStack{}
-		stack.Append(mockUsecaseError2)
-		stack.Append(mockUsecaseError)
+		stack := Error{}
+		stack.AppendUsecaseError(mockUsecaseError2)
+		stack.AppendUsecaseError(mockUsecaseError)
 
-		err := stack.LastError()
+		err := stack.LastUsecaseError()
 		t.Run("Check if last error is correct", func(t *testing.T) {
 			if err != mockUsecaseError {
 				t.Errorf("Test_ErrorStack_ReturnedCorrectLastError_UsecaseOnly() returned '%s', when it should return '%s'", err.Error(), mockUsecaseError.Error())
@@ -190,10 +190,10 @@ func Test_ErrorStack_AppendAndRetrieve(t *testing.T) {
 	}
 
 	Test_ErrorStack_ReturnedCorrectLastError_EntityOnly := func(t *testing.T) {
-		stack := ErrorStack{}
+		stack := Error{}
 		stack.AddEntityError(mockEntityErr)
 
-		err := stack.LastError()
+		err := stack.LastUsecaseError()
 		t.Run("Check if last error is correct", func(t *testing.T) {
 			if err != mockEntityErr {
 				t.Errorf("Test_ErrorStack_ReturnedCorrectLastError_EntityOnly() returned '%s', when it should return '%s'", err.Error(), mockEntityErr.Error())
@@ -202,11 +202,11 @@ func Test_ErrorStack_AppendAndRetrieve(t *testing.T) {
 	}
 
 	Test_ErrorStack_ReturnedCorrectLastError_EntityAndUsecase := func(t *testing.T) {
-		stack := ErrorStack{}
+		stack := Error{}
 		stack.AddEntityError(mockEntityErr)
-		stack.Append(mockUsecaseError2)
+		stack.AppendUsecaseError(mockUsecaseError2)
 
-		err := stack.LastError()
+		err := stack.LastUsecaseError()
 		t.Run("Check if last error is correct", func(t *testing.T) {
 			if err != mockUsecaseError2 {
 				t.Errorf("Test_ErrorStack_ReturnedCorrectLastError_EntityAndUsecase() returned '%s', when it should return '%s'", err.Error(), mockUsecaseError2.Error())
@@ -215,9 +215,9 @@ func Test_ErrorStack_AppendAndRetrieve(t *testing.T) {
 	}
 
 	Test_ErrorStack_ReturnedCorrectEntityError := func(t *testing.T) {
-		stack := ErrorStack{}
+		stack := Error{}
 		stack.AddEntityError(mockUsecaseError2)
-		stack.Append(mockEntityErr)
+		stack.AppendUsecaseError(mockEntityErr)
 
 		err := stack.EntityError()
 		t.Run("Check if entity error is correct", func(t *testing.T) {
@@ -228,8 +228,8 @@ func Test_ErrorStack_AppendAndRetrieve(t *testing.T) {
 	}
 
 	Test_ErrorStack_ReturnedCorrectNilEntityError := func(t *testing.T) {
-		stack := ErrorStack{}
-		stack.Append(mockUsecaseError)
+		stack := Error{}
+		stack.AppendUsecaseError(mockUsecaseError)
 
 		err := stack.EntityError()
 		t.Run("Check if entity error is correct (nil)", func(t *testing.T) {
@@ -240,7 +240,7 @@ func Test_ErrorStack_AppendAndRetrieve(t *testing.T) {
 	}
 
 	Test_ErrorStack_ShouldntAppendMoreThanOneEntityError := func(t *testing.T) {
-		stack := ErrorStack{}
+		stack := Error{}
 		stack.AddEntityError(mockEntityErr)
 		stack.AddEntityError(mockUsecaseError)
 
@@ -251,8 +251,8 @@ func Test_ErrorStack_AppendAndRetrieve(t *testing.T) {
 			}
 		})
 
-		err = stack.LastError()
-		t.Run("Check if entity error is correct (LastError())", func(t *testing.T) {
+		err = stack.LastUsecaseError()
+		t.Run("Check if entity error is correct (LastUsecaseError())", func(t *testing.T) {
 			if err != mockEntityErr {
 				t.Errorf("Test_ErrorStack_ShouldntAppendMoreThanOneEntityError() returned '%s', when it should return '%s'", err.Error(), mockEntityErr.Error())
 			}

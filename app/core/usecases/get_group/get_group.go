@@ -1,6 +1,7 @@
 package get_group
 
 import (
+	"context"
 	"time"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
@@ -8,33 +9,33 @@ import (
 )
 
 type GetGroupWaterTank struct {
-	tank water_tank.WaterTankData
+	tank water_tank.IWaterTankDatabase
 }
 
-func NewGetGroupWaterTank(tank water_tank.WaterTankData) *GetGroupWaterTank {
+func NewGetGroupWaterTank(tank water_tank.IWaterTankDatabase) *GetGroupWaterTank {
 	return &GetGroupWaterTank{
 		tank: tank,
 	}
 }
 
-func (conn *GetGroupWaterTank) Get(name string) (response *ports.WaterTankGroupState, err stack.ErrorStack) {
+func (conn *GetGroupWaterTank) Get(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanks) (response *ports.WaterTankGroupState, err stack.Error) {
 	var states []*water_tank.WaterTank
 	response = new(ports.WaterTankGroupState)
 
-	if name != "" {
-		states, err = conn.tank.GetTankGroupState(name)
+	if input.Group != "" {
+		states, err = conn.tank.GetTankGroupState(ctx, connection, input)
 	} else {
-		err.Append(ErrWaterTankMissingGroup)
+		err.AppendUsecaseError(ErrWaterTankMissingGroup)
 		return
 	}
 
 	if err.HasError() {
-		err.Append(ErrWaterTankErrorServerError(err.EntityError().Error()))
+		err.AppendUsecaseError(ErrWaterTankErrorServerError(err.EntityError().Error()))
 		return
 	}
 
 	if len(states) == 0 {
-		err.Append(ErrWaterTankErrorGroupNotFound(name))
+		err.AppendUsecaseError(ErrWaterTankErrorGroupNotFound(input.Group))
 		return
 	}
 

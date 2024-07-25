@@ -1,9 +1,10 @@
-package controllers
+package response
 
 import (
 	"encoding/json"
 	"errors"
-	"water-tank-api/app/core/entity/access"
+	"water-tank-api/app/core/entity/error_stack"
+	"water-tank-api/app/core/entity/logs"
 	"water-tank-api/app/core/usecases/ports"
 )
 
@@ -44,13 +45,6 @@ func NewControllerEmptyResponse(code string) *ControllerResponse {
 	}
 }
 
-func NewControllerCreateResponse(code string, content access.AccessToken) *ControllerResponse {
-	return &ControllerResponse{
-		Content: map[string]interface{}{"access_token": content},
-		Code:    code,
-	}
-}
-
 func NewControllerGroupResponse(code string, content *ports.WaterTankGroupState) *ControllerResponse {
 	bytes, _ := json.Marshal(content)
 
@@ -68,4 +62,28 @@ func NewControllerError(code string, message string) *ControllerResponse {
 		Content: map[string]interface{}{"error": message},
 		Code:    code,
 	}
+}
+
+func SwitchError(usecaseErr error_stack.Error) (response *ControllerResponse) {
+	switch usecaseErr.EntityError() {
+	case nil:
+		response = NewControllerError(WaterTankNotFound, usecaseErr.LastUsecaseError().Error())
+	default:
+		response = NewControllerError(WaterTankInternalServerError, usecaseErr.LastUsecaseError().Error())
+	}
+
+	err := usecaseErr.LastUsecaseError()
+	logs.Gateway().Error(err.Error())
+	return
+}
+
+func NewValidationError() *ControllerResponse {
+	return &ControllerResponse{
+		Content: map[string]interface{}{},
+		Code:    WaterTankBadRequest,
+	}
+}
+
+func (response *ControllerResponse) AddDetails(field, value string) {
+	response.Content[field] = value
 }

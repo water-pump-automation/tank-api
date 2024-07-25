@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
+	"water-tank-api/app/controllers/response"
+	"water-tank-api/app/controllers/validation"
 	"water-tank-api/app/core/entity/logs"
+	"water-tank-api/app/core/entity/water_tank"
 	"water-tank-api/app/core/usecases/get_group"
 	"water-tank-api/app/core/usecases/get_tank"
 )
@@ -22,53 +26,42 @@ func NewExternalController(
 	}
 }
 
-func (controller *ExternalController) Get(tank string, group string) (response *ControllerResponse, err error) {
-	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank, of group '%s' state...", tank, group))
+func (controller *ExternalController) Get(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankState) (resp *response.ControllerResponse, err error) {
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank, of group '%s' state...", input.TankName, input.Group))
 
-	usecaseResponse, usecaseErr := controller.getTankUsecase.Get(tank, group)
-
-	if usecaseErr.HasError() {
-		switch usecaseErr.EntityError() {
-		case nil:
-			response = NewControllerError(WaterTankNotFound, usecaseErr.LastError().Error())
-		default:
-			response = NewControllerError(WaterTankInternalServerError, usecaseErr.LastError().Error())
-		}
-
-		err = usecaseErr.LastError()
-		logs.Gateway().Error(err.Error())
+	resp = validation.Validate(ctx, input, validation.GetTankSchemaLoader)
+	if resp != nil {
 		return
 	}
 
-	response = NewControllerResponse(WaterTankOK, usecaseResponse)
+	usecaseResponse, usecaseErr := controller.getTankUsecase.Get(ctx, connection, input)
+
+	if usecaseErr.HasError() {
+		resp = response.SwitchError(usecaseErr)
+		return
+	}
+
+	resp = response.NewControllerResponse(response.WaterTankOK, usecaseResponse)
 
 	return
 }
 
-func (controller *ExternalController) GetGroup(group string) (response *ControllerResponse, err error) {
-	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", group))
+func (controller *ExternalController) GetGroup(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanks) (resp *response.ControllerResponse, err error) {
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", input.Group))
 
-	usecaseResponse, usecaseErr := controller.getGroupUsecase.Get(group)
-
-	if usecaseErr.HasError() {
-		switch usecaseErr.EntityError() {
-		case nil:
-			useCase := usecaseErr.LastError()
-			if useCase == get_group.ErrWaterTankMissingGroup {
-				response = NewControllerError(WaterTankBadRequest, usecaseErr.LastError().Error())
-				return
-			}
-			response = NewControllerError(WaterTankNotFound, usecaseErr.LastError().Error())
-		default:
-			response = NewControllerError(WaterTankInternalServerError, usecaseErr.LastError().Error())
-		}
-
-		err = usecaseErr.LastError()
-		logs.Gateway().Error(err.Error())
+	resp = validation.Validate(ctx, input, validation.GetGroupSchemaLoader)
+	if resp != nil {
 		return
 	}
 
-	response = NewControllerGroupResponse(WaterTankOK, usecaseResponse)
+	usecaseResponse, usecaseErr := controller.getGroupUsecase.Get(ctx, connection, input)
+
+	if usecaseErr.HasError() {
+		resp = response.SwitchError(usecaseErr)
+		return
+	}
+
+	resp = response.NewControllerGroupResponse(response.WaterTankOK, usecaseResponse)
 
 	return
 }

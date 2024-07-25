@@ -1,9 +1,11 @@
 package web
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"water-tank-api/app/controllers"
+	"water-tank-api/app/core/entity/water_tank"
 )
 
 type ExternalRouter struct{}
@@ -48,21 +50,19 @@ func (r *ExternalRouter) Route(mux *http.ServeMux, controller *controllers.Exter
 }
 
 func getTankExternal(controller *controllers.ExternalController, writer http.ResponseWriter, request *http.Request) {
+	ctx := context.Background()
+
 	tankName := request.PathValue("tank")
 	groupName := request.Header.Get("group")
 
-	response, _ := controller.Get(tankName, groupName)
+	resp, _ := controller.Get(ctx, nil, &water_tank.GetWaterTankState{
+		TankName: tankName,
+		Group:    groupName,
+	})
 
-	switch response.Code {
-	case controllers.WaterTankNotFound:
-		writer.WriteHeader(http.StatusNotFound)
-	case controllers.WaterTankInternalServerError:
-		writer.WriteHeader(http.StatusInternalServerError)
-	case controllers.WaterTankOK:
-		writer.WriteHeader(http.StatusOK)
-	}
+	writer.WriteHeader(mapError(resp.Code))
 
-	responseBytes, err := json.Marshal(response)
+	responseBytes, err := json.Marshal(resp)
 	if err != nil {
 		internalServerError(writer)
 		return
@@ -72,20 +72,16 @@ func getTankExternal(controller *controllers.ExternalController, writer http.Res
 }
 
 func getGroupExternal(controller *controllers.ExternalController, writer http.ResponseWriter, request *http.Request) {
+	ctx := context.Background()
 	groupName := request.PathValue("group")
 
-	response, _ := controller.GetGroup(groupName)
+	resp, _ := controller.GetGroup(ctx, nil, &water_tank.GetGroupTanks{
+		Group: groupName,
+	})
 
-	switch response.Code {
-	case controllers.WaterTankNotFound:
-		writer.WriteHeader(http.StatusNotFound)
-	case controllers.WaterTankInternalServerError:
-		writer.WriteHeader(http.StatusInternalServerError)
-	case controllers.WaterTankOK:
-		writer.WriteHeader(http.StatusOK)
-	}
+	writer.WriteHeader(mapError(resp.Code))
 
-	responseBytes, err := json.Marshal(response)
+	responseBytes, err := json.Marshal(resp)
 	if err != nil {
 		internalServerError(writer)
 		return

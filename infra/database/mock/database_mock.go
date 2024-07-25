@@ -1,8 +1,8 @@
 package database_mock
 
 import (
+	"context"
 	"time"
-	"water-tank-api/app/core/entity/access"
 	stack "water-tank-api/app/core/entity/error_stack"
 	"water-tank-api/app/core/entity/water_tank"
 )
@@ -23,7 +23,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   100,
 					TankState:         water_tank.Empty,
 					CurrentWaterLevel: 0,
-					Access:            "a",
 					LastFullTime:      MockTimeNow,
 				},
 				"TANK_2": {
@@ -32,7 +31,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   80,
 					TankState:         water_tank.Filling,
 					CurrentWaterLevel: 50,
-					Access:            "b",
 					LastFullTime:      MockTimeNow,
 				},
 				"TANK_3": {
@@ -41,7 +39,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   120,
 					TankState:         water_tank.Full,
 					CurrentWaterLevel: 120,
-					Access:            "c",
 					LastFullTime:      MockTimeNow,
 				},
 			},
@@ -52,7 +49,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   100,
 					TankState:         water_tank.Empty,
 					CurrentWaterLevel: 0,
-					Access:            "d",
 					LastFullTime:      MockTimeNow,
 				},
 				"TANK_2": {
@@ -61,7 +57,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   80,
 					TankState:         water_tank.Full,
 					CurrentWaterLevel: 80,
-					Access:            "e",
 					LastFullTime:      MockTimeNow,
 				},
 			},
@@ -72,7 +67,6 @@ func NewWaterTankMockData() *WaterTankMockData {
 					MaximumCapacity:   120,
 					TankState:         water_tank.Filling,
 					CurrentWaterLevel: 90,
-					Access:            "f",
 					LastFullTime:      MockTimeNow,
 				},
 			},
@@ -80,13 +74,13 @@ func NewWaterTankMockData() *WaterTankMockData {
 	}
 }
 
-func (tank *WaterTankMockData) GetWaterTankState(group string, names ...string) (state *water_tank.WaterTank, err stack.ErrorStack) {
-	state = tank.states[group][names[0]]
+func (tank *WaterTankMockData) GetWaterTankState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankState) (state *water_tank.WaterTank, err stack.Error) {
+	state = tank.states[input.Group][input.TankName]
 	return
 }
 
-func (tank *WaterTankMockData) GetTankGroupState(groups ...string) (state []*water_tank.WaterTank, err stack.ErrorStack) {
-	if group, exists := tank.states[groups[0]]; exists {
+func (tank *WaterTankMockData) GetTankGroupState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanks) (state []*water_tank.WaterTank, err stack.Error) {
+	if group, exists := tank.states[input.Group]; exists {
 		for _, tank := range group {
 			state = append(state, tank)
 		}
@@ -94,37 +88,35 @@ func (tank *WaterTankMockData) GetTankGroupState(groups ...string) (state []*wat
 	return
 }
 
-func (tank *WaterTankMockData) CreateWaterTank(name string, group string, accessToken access.AccessToken, capacity water_tank.Capacity) (err stack.ErrorStack) {
-	if _, exists := tank.states[group]; !exists {
-		tank.states[group] = map[string]*water_tank.WaterTank{
-			name: {
-				Name:              name,
-				Group:             group,
-				MaximumCapacity:   capacity,
+func (tank *WaterTankMockData) CreateWaterTank(ctx context.Context, connection water_tank.IConn, input *water_tank.CreateInput) (state *water_tank.WaterTank, err stack.Error) {
+	if _, exists := tank.states[input.Group]; !exists {
+		tank.states[input.Group] = map[string]*water_tank.WaterTank{
+			input.TankName: {
+				Name:              input.TankName,
+				Group:             input.Group,
+				MaximumCapacity:   input.MaximumCapacity,
 				TankState:         water_tank.Empty,
 				CurrentWaterLevel: 0,
-				Access:            accessToken,
 			},
 		}
 		return
 	}
 
-	tank.states[group][name] = &water_tank.WaterTank{
-		Name:              name,
-		Group:             group,
-		MaximumCapacity:   capacity,
+	tank.states[input.Group][input.TankName] = &water_tank.WaterTank{
+		Name:              input.TankName,
+		Group:             input.Group,
+		MaximumCapacity:   input.MaximumCapacity,
 		TankState:         water_tank.Empty,
 		CurrentWaterLevel: 0,
-		Access:            accessToken,
 	}
 
 	return
 }
 
-func (tank *WaterTankMockData) UpdateWaterTankState(name string, group string, waterLevel water_tank.Capacity, levelState water_tank.State) (state *water_tank.WaterTank, err stack.ErrorStack) {
-	if group, exists := tank.states[group]; exists {
-		group[name].CurrentWaterLevel = waterLevel
-		group[name].TankState = levelState
+func (tank *WaterTankMockData) UpdateTankWaterLevel(ctx context.Context, connection water_tank.IConn, input *water_tank.UpdateWaterLevelInput) (state *water_tank.WaterTank, err stack.Error) {
+	if group, exists := tank.states[input.TankName]; exists {
+		group[input.TankName].CurrentWaterLevel = input.NewWaterLevel
+		group[input.TankName].TankState = input.State
 	}
 	return
 }

@@ -1,9 +1,7 @@
 # water-tank-api
-API for water tank's data management.
+This API is divided into `Internal` and `External` endpoints.
 
-The API is divided into `Internal` and `External` endpoints.
-
-The `External` ones are read-only access to tank's data, or a group of tanks.
+The `External` are read-only access to tank's data or to a group of tanks.
 The returned attributes are:
 
 - `Name`
@@ -16,11 +14,8 @@ The returned attributes are:
 - `CurrentWaterLevel`
 - `LastFullTime`
 
-The `Internal` exposes all the `External` ones, plus the hability to register a new tank
-and update any water level.
-
-In order to provide a new water state, it must be passed an `access_token`,
-working as a password to prevent other API users to do malicious or multiple modifications.
+The `Internal` gives the option to register a new tank
+and update a water level.
 
 ## Deploy options
 
@@ -49,64 +44,75 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 
 ## Endpoints
 
+### /v1/water-tank/
 
-### [POST] /v1/water-tank/
+#### [POST]
 
-#### Response codes
+##### Response codes
 
 - `Ok (200)`
 - `Bad Request (400)`
 - `Unprocessable Entity (422)`
 
-#### Request body example
+##### Request body example
 ``` json
 {
-    "name": "TANK_7",
+    "tank_name": "TANK_7",
     "group": "GROUP_2",
     "maximum_capacity": 45
 }
 ```
 
-#### Response example
+##### Response example
 ``` json
 {
-    "access_token": "&e#&5C&F+zR726sHy9DaY&CftEX#Sinw" // example
+    "code": "WATERTANK_200",
+    "content": {
+        "current_water_level": "0.00L",
+        "datetime": "2023-09-25T19:34:39.775746328Z",
+        "group": "GROUP_2",
+        "maximum_capacity": "45.00L",
+        "name": "TANK_7",
+        "tank_state": "EMPTY"
+    }
 }
 ```
 
-### [PATCH] /v1/water-tank/tank/*
+### /v1/water-tank/tank/{tank}
 
-#### Response codes
+#### [PATCH]
+
+##### Response codes
 
 - `No Content (204)`
 - `Bad Request (400)`
 - `Not Found (404)`
 - `Unprocessable Entity (422)`
 
-#### Request header
+##### Request header
 
-- `access_token`
 - `group`
 
-#### Request body example
+##### Request body example
 ``` json
 {
     "water_level": 10
 }
 ```
 
-### [GET] /v1/water-tank/tank/*
+#### [GET]
 
-#### Response codes
+##### Response codes
 
 - `Ok (200)`
+- `Bad Request (400)`
 - `Not Found (404)`
 
-#### Request header
+##### Request header
 
 - `group`
 
-#### Response example
+##### Response example
 ``` json
 {
     "code": "WATERTANK_200",
@@ -121,15 +127,17 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 }
 ```
 
-### [GET] /v1/water-tank/group/*
+### /v1/water-tank/group/{group}
 
-#### Response codes
+#### [GET]
+
+##### Response codes
 
 - `Ok (200)`
 - `Bad Request (400)`
 - `Not Found (404)`
 
-#### Response example
+##### Response example
 ``` json
 {
     "code": "WATERTANK_200",

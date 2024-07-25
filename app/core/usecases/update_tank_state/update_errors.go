@@ -8,7 +8,6 @@ import (
 var (
 	ErrWaterTankCurrentWaterLevelSmallerThanZero = errors.New("invalid water level. Smaller than 0")
 	ErrWaterTankCurrentWaterLevelBiggerThanMax   = errors.New("invalid water level. Bigger than maximum capacity")
-	ErrWaterTankInvalidToken                     = errors.New("invalid access token")
 	ErrWaterTankErrorNotFound                    = func(tank string) error {
 		return fmt.Errorf("didn't found %s tank", tank)
 	}

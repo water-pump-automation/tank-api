@@ -2,9 +2,9 @@ package water_tank
 
 import (
 	"time"
-	"water-tank-api/app/core/entity/access"
-	stack "water-tank-api/app/core/entity/error_stack"
 )
+
+type Capacity float32
 
 type State int
 
@@ -14,13 +14,10 @@ const (
 	Full
 )
 
-type Capacity float32
-
 type WaterTank struct {
 	// IDs
-	Name   string
-	Group  string
-	Access access.AccessToken
+	Name  string
+	Group string
 
 	// External updatable attributes
 	CurrentWaterLevel Capacity
@@ -31,11 +28,4 @@ type WaterTank struct {
 
 	// Fixed attributes
 	MaximumCapacity Capacity
-}
-
-type WaterTankData interface {
-	CreateWaterTank(name string, group string, accessToken access.AccessToken, capacity Capacity) (err stack.ErrorStack)
-	UpdateWaterTankState(name string, group string, waterLevel Capacity, levelState State) (state *WaterTank, err stack.ErrorStack)
-	GetWaterTankState(group string, names ...string) (state *WaterTank, err stack.ErrorStack)
-	GetTankGroupState(groups ...string) (state []*WaterTank, err stack.ErrorStack)
 }
