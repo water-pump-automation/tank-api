@@ -2,7 +2,7 @@ package mongodb
 
 import (
 	"context"
-	"water-tank-api/app/core/entity/water_tank"
+	"water-tank-api/app/entity/water_tank"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -19,7 +19,7 @@ func InitClient(ctx context.Context, connectionURI string) (client *mongo.Client
 	return
 }
 
-func NewCollection(ctx context.Context, client *mongo.Client, database, collection string) water_tank.WaterTankData {
+func NewCollection(ctx context.Context, client *mongo.Client, database, collection string) water_tank.IWaterTankDatabase {
 	mongoCollection := client.Database(database).Collection(collection)
 
 	return &WaterTankMongoDB{

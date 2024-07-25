@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
-	"water-tank-api/app/core/entity/logs"
+	"water-tank-api/app/entity/logs"
 )
 
 type STDOutLogger struct {

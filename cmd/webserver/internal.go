@@ -9,15 +9,14 @@ import (
 	"syscall"
 	"time"
 
-	"water-tank-api/app/controllers"
-	"water-tank-api/app/core/entity/logs"
-	"water-tank-api/app/core/usecases/create_tank"
-	"water-tank-api/app/core/usecases/get_group"
-	"water-tank-api/app/core/usecases/get_tank"
-	"water-tank-api/app/core/usecases/update_tank_state"
+	"water-tank-api/app/entity/logs"
+	"water-tank-api/app/usecases/create_tank"
+	"water-tank-api/app/usecases/get_group"
+	"water-tank-api/app/usecases/get_tank"
+	"water-tank-api/app/usecases/update_tank_state"
 	mongodb "water-tank-api/infra/database/mongoDB"
 	"water-tank-api/infra/logs/stdout"
-	"water-tank-api/infra/web"
+	web "water-tank-api/infra/web/http"
 )
 
 func Internal() {
@@ -36,19 +35,19 @@ func Internal() {
 		Addr:    serverPort,
 		Handler: mux,
 	}
-	internalRouter := web.InternalRouter{}
+
 	collection := mongodb.NewCollection(mainCtx, mongoClient, databaseName, databaseCollection)
 
 	getTankUsecase := get_tank.NewGetWaterTank(collection)
-	internalRouter.Route(
-		mux,
-		controllers.NewInternalController(
-			getTankUsecase,
-			get_group.NewGetGroupWaterTank(collection),
-			create_tank.NewWaterTank(collection, getTankUsecase),
-			update_tank_state.NewWaterTankUpdate(collection, getTankUsecase),
-		),
+
+	internalAPI := web.NewInternalAPI(
+		getTankUsecase,
+		get_group.NewGetGroupWaterTank(collection),
+		create_tank.NewWaterTank(collection, getTankUsecase),
+		update_tank_state.NewWaterTankUpdate(collection, getTankUsecase),
 	)
+
+	internalAPI.Route(mux)
 
 	go func() {
 		logs.Gateway().Info("Started internal server on port:" + serverPort)

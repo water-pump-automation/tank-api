@@ -9,13 +9,12 @@ import (
 	"syscall"
 	"time"
 
-	"water-tank-api/app/controllers"
-	"water-tank-api/app/core/entity/logs"
-	"water-tank-api/app/core/usecases/get_group"
-	"water-tank-api/app/core/usecases/get_tank"
+	"water-tank-api/app/entity/logs"
+	"water-tank-api/app/usecases/get_group"
+	"water-tank-api/app/usecases/get_tank"
 	mongodb "water-tank-api/infra/database/mongoDB"
 	"water-tank-api/infra/logs/stdout"
-	"water-tank-api/infra/web"
+	web "water-tank-api/infra/web/http"
 )
 
 func External() {
@@ -34,16 +33,14 @@ func External() {
 		Addr:    serverPort,
 		Handler: mux,
 	}
-	externalRouter := web.ExternalRouter{}
 	collection := mongodb.NewCollection(mainCtx, mongoClient, databaseName, databaseCollection)
 
-	externalRouter.Route(
-		mux,
-		controllers.NewExternalController(
-			get_tank.NewGetWaterTank(collection),
-			get_group.NewGetGroupWaterTank(collection),
-		),
+	externalAPI := web.NewExternalAPI(
+		get_tank.NewGetWaterTank(collection),
+		get_group.NewGetGroupWaterTank(collection),
 	)
+
+	externalAPI.Route(mux)
 
 	go func() {
 		logs.Gateway().Info("Started internal server on port:" + serverPort)

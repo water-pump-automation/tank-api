@@ -50,7 +50,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 
 ##### Response codes
 
-- `Ok (200)`
+- `Created (201)`
 - `Bad Request (400)`
 - `Unprocessable Entity (422)`
 
@@ -63,18 +63,15 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 }
 ```
 
-##### Response example
+##### Success response example
 ``` json
 {
-    "code": "WATERTANK_200",
-    "content": {
-        "current_water_level": "0.00L",
-        "datetime": "2023-09-25T19:34:39.775746328Z",
-        "group": "GROUP_2",
-        "maximum_capacity": "45.00L",
-        "name": "TANK_7",
-        "tank_state": "EMPTY"
-    }
+    "current_water_level": "0.00L",
+    "datetime": "2023-09-25T19:34:39.775746328Z",
+    "group": "GROUP_2",
+    "maximum_capacity": "45.00L",
+    "name": "TANK_7",
+    "tank_state": "EMPTY"
 }
 ```
 
@@ -91,7 +88,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 
 ##### Request header
 
-- `group`
+- `group`: Tank's group name
 
 ##### Request body example
 ``` json
@@ -110,20 +107,17 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 
 ##### Request header
 
-- `group`
+- `group`: Tank's group name
 
-##### Response example
+##### Success response example
 ``` json
 {
-    "code": "WATERTANK_200",
-    "content": {
-        "current_water_level": "90.00L",
-        "datetime": "2023-09-25T19:34:39.775746328Z",
-        "group": "GROUP_3",
-        "maximum_capacity": "120.00L",
-        "name": "TANK_6",
-        "tank_state": "FILLING"
-    }
+    "current_water_level": "90.00L",
+    "datetime": "2023-09-25T19:34:39.775746328Z",
+    "group": "GROUP_3",
+    "maximum_capacity": "120.00L",
+    "name": "TANK_6",
+    "tank_state": "FILLING"
 }
 ```
 
@@ -137,35 +131,32 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 - `Bad Request (400)`
 - `Not Found (404)`
 
-##### Response example
+##### Success response example
 ``` json
 {
-    "code": "WATERTANK_200",
-    "content": {
-        "datetime": "2023-09-25T19:36:20.721605065Z",
-        "tanks": [
-            {
-                "current_water_level": "0.00L",
-                "group": "GROUP_1",
-                "maximum_capacity": "100.00L",
-                "name": "TANK_1",
-                "tank_state": "EMPTY"
-            },
-            {
-                "current_water_level": "50.00L",
-                "group": "GROUP_1",
-                "maximum_capacity": "80.00L",
-                "name": "TANK_2",
-                "tank_state": "FILLING"
-            },
-            {
-                "current_water_level": "120.00L",
-                "group": "GROUP_1",
-                "maximum_capacity": "120.00L",
-                "name": "TANK_3",
-                "tank_state": "FULL"
-            }
-        ]
-    }
+    "datetime": "2023-09-25T19:36:20.721605065Z",
+    "tanks": [
+        {
+            "current_water_level": "0.00L",
+            "group": "GROUP_1",
+            "maximum_capacity": "100.00L",
+            "name": "TANK_1",
+            "tank_state": "EMPTY"
+        },
+        {
+            "current_water_level": "50.00L",
+            "group": "GROUP_1",
+            "maximum_capacity": "80.00L",
+            "name": "TANK_2",
+            "tank_state": "FILLING"
+        },
+        {
+            "current_water_level": "120.00L",
+            "group": "GROUP_1",
+            "maximum_capacity": "120.00L",
+            "name": "TANK_3",
+            "tank_state": "FULL"
+        }
+    ]
 }
 ```
