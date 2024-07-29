@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 )
 
@@ -15,7 +16,7 @@ func getResponseBody(writer http.ResponseWriter, response any) (responseBytes []
 }
 
 func writeBadRequestError(writer http.ResponseWriter, err error) {
-	errorBody, err := getResponseBody(writer, NewAPIError(WaterTankBadRequest, err.Error()))
+	errorBody, err := getResponseBody(writer, NewAPIValidationError(WaterTankBadRequest, err.Error()))
 	if err != nil {
 		return
 	}
@@ -23,32 +24,20 @@ func writeBadRequestError(writer http.ResponseWriter, err error) {
 	writer.Write(errorBody)
 }
 
-func getBody(writer http.ResponseWriter, request *http.Request, body any) error {
-	var bodyBytes []byte
+func getBody(writer http.ResponseWriter, request *http.Request) (map[string]interface{}, error) {
+	inputMap := make(map[string]interface{})
 
-	bodyReader, err := request.GetBody()
+	bodyBytes, err := io.ReadAll(request.Body)
 	if err != nil {
 		writeInternalServerError(writer)
-		return err
+		return nil, err
 	}
-	_, err = bodyReader.Read(bodyBytes)
+	defer request.Body.Close()
+
+	err = json.Unmarshal(bodyBytes, &inputMap)
 	if err != nil {
 		writeInternalServerError(writer)
-		return err
+		return nil, err
 	}
-	defer bodyReader.Close()
-
-	err = json.Unmarshal(bodyBytes, &body)
-	if err != nil {
-		responseError := NewAPIError(WaterTankBadRequest, "Bad request. Wrong type parameter")
-		response, err := json.Marshal(responseError)
-		if err != nil {
-			writeInternalServerError(writer)
-			return err
-		}
-		writer.Write(response)
-		writer.WriteHeader(http.StatusBadRequest)
-		return err
-	}
-	return nil
+	return inputMap, nil
 }

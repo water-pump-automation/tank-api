@@ -1,21 +1,5 @@
 # water-tank-api
-This API is divided into `Internal` and `External` endpoints.
-
-The `External` are read-only access to tank's data or to a group of tanks.
-The returned attributes are:
-
-- `Name`
-- `Group`
-- `MaximumCapacity`
-- `TankState`
-  - `Empty`
-  - `Filling`
-  - `Full`
-- `CurrentWaterLevel`
-- `LastFullTime`
-
-The `Internal` gives the option to register a new tank
-and update a water level.
+This API is divided into `Internal` (read-only) and `External` (write-only) endpoints.
 
 ## Deploy options
 
@@ -46,7 +30,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 
 ### /v1/water-tank/
 
-#### [POST]
+#### [POST] [Internal]
 
 ##### Response codes
 
@@ -75,9 +59,9 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 }
 ```
 
-### /v1/water-tank/tank/{tank}
+### /v1/water-tank/tank/{tank_name}
 
-#### [PATCH]
+#### [PATCH] [Internal]
 
 ##### Response codes
 
@@ -97,7 +81,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 }
 ```
 
-#### [GET]
+#### [GET] [External]
 
 ##### Response codes
 
@@ -123,7 +107,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 
 ### /v1/water-tank/group/{group}
 
-#### [GET]
+#### [GET] [External]
 
 ##### Response codes
 

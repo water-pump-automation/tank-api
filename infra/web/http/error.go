@@ -1,5 +1,7 @@
 package web
 
+import "encoding/json"
+
 var (
 	WaterTankNotFound            = "WATERTANK_404"
 	WaterTankBadRequest          = "WATERTANK_400"
@@ -8,13 +10,23 @@ var (
 )
 
 type APIError struct {
-	Code    string                 `json:"code"`
-	Content map[string]interface{} `json:"content"`
+	Code  string                 `json:"code"`
+	Error map[string]interface{} `json:"error"`
 }
 
 func NewAPIError(code string, message string) *APIError {
 	return &APIError{
-		Content: map[string]interface{}{"error": message},
-		Code:    code,
+		Error: map[string]interface{}{"error": message},
+		Code:  code,
+	}
+}
+
+func NewAPIValidationError(code string, message string) *APIError {
+	validationErr := make(map[string]interface{})
+
+	json.Unmarshal([]byte(message), &validationErr)
+	return &APIError{
+		Error: validationErr,
+		Code:  code,
 	}
 }

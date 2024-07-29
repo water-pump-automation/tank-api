@@ -2,9 +2,11 @@ package update_tank_state
 
 import (
 	"context"
-	"water-tank-api/app/entity/validation"
+	"fmt"
+	"water-tank-api/app/entity/logs"
 	"water-tank-api/app/entity/water_tank"
 	"water-tank-api/app/usecases/ports"
+	"water-tank-api/app/usecases/validate"
 )
 
 type UpdateWaterTank struct {
@@ -19,18 +21,22 @@ func NewWaterTankUpdate(tank water_tank.IWaterTankDatabase, getUsecase ports.IGe
 	}
 }
 
-func (conn *UpdateWaterTank) Update(ctx context.Context, connection water_tank.IConn, input *water_tank.UpdateWaterLevelInput) (err error) {
+func (conn *UpdateWaterTank) Update(ctx context.Context, connection water_tank.IConn, input ports.UsecaseInput) (err error) {
 	var maximumCapacity water_tank.Capacity
+	var databaseInput water_tank.UpdateWaterLevelInput
 
-	if validationErr, err := validation.Validate(ctx, input, validation.UpdateTankSchemaLoader); err != nil {
+	if err := validate.ValidateInput(ctx, input, &databaseInput, UpdateTankSchemaLoader); err != nil {
 		return err
-	} else if validationErr != nil {
-		return validationErr
 	}
 
-	maximumCapacity, err = conn.getUsecase.GetMaximumCapacity(ctx, connection, &water_tank.GetWaterTankState{
-		TankName: input.TankName,
-		Group:    input.Group,
+	logs.Gateway().Info(
+		fmt.Sprintf("Updating '%s' tank's, of group '%s', water level to %s",
+			databaseInput.TankName, databaseInput.Group, ports.ConvertCapacityToLiters(databaseInput.NewWaterLevel)),
+	)
+
+	maximumCapacity, err = conn.getUsecase.GetMaximumCapacity(ctx, connection, &water_tank.GetWaterTankStateInput{
+		TankName: databaseInput.TankName,
+		Group:    databaseInput.Group,
 	})
 
 	if err != nil {
@@ -41,21 +47,16 @@ func (conn *UpdateWaterTank) Update(ctx context.Context, connection water_tank.I
 		return ErrWaterTankErrorNotFound
 	}
 
-	if input.NewWaterLevel < 0 {
+	if databaseInput.NewWaterLevel < 0 {
 		return ErrWaterTankCurrentWaterLevelSmallerThanZero
 	}
 
-	if input.NewWaterLevel > maximumCapacity {
+	databaseInput.State = ports.MapWaterState(databaseInput.NewWaterLevel, maximumCapacity)
+	if databaseInput.State == water_tank.Invalid {
 		return ErrWaterTankCurrentWaterLevelBiggerThanMax
-	} else if input.NewWaterLevel == maximumCapacity {
-		input.State = water_tank.Full
-	} else if input.NewWaterLevel == 0 {
-		input.State = water_tank.Empty
-	} else if input.NewWaterLevel < maximumCapacity {
-		input.State = water_tank.Filling
 	}
 
-	_, updateErr := conn.tank.UpdateTankWaterLevel(ctx, connection, input)
+	_, updateErr := conn.tank.UpdateTankWaterLevel(ctx, connection, &databaseInput)
 
 	if updateErr != nil {
 		return ErrWaterTankErrorServerError(updateErr.Error())

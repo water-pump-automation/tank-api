@@ -8,6 +8,13 @@ import (
 	"water-tank-api/app/entity/water_tank"
 )
 
+const (
+	EMPTY   = "EMPTY"
+	FILLING = "FILLING"
+	FULL    = "FULL"
+	UNKOWN  = "UNKOWN"
+)
+
 type WaterTankState struct {
 	Name              string     `json:"name"`
 	Group             string     `json:"group"`
@@ -23,16 +30,27 @@ type WaterTankGroupState struct {
 	Datetime time.Time         `json:"datetime"`
 }
 
-func MapTankStateEnum(tankState water_tank.State) string {
+func MapWaterState(waterLevel water_tank.Capacity, maximumCapacity water_tank.Capacity) water_tank.State {
+	if waterLevel == maximumCapacity {
+		return water_tank.Full
+	} else if waterLevel == 0 {
+		return water_tank.Empty
+	} else if waterLevel < maximumCapacity {
+		return water_tank.Filling
+	}
+	return water_tank.Invalid
+}
+
+func ConvertState(tankState water_tank.State) string {
 	switch tankState {
 	case water_tank.Empty:
-		return "EMPTY"
+		return EMPTY
 	case water_tank.Filling:
-		return "FILLING"
+		return FILLING
 	case water_tank.Full:
-		return "FULL"
+		return FULL
 	default:
-		return "UNKOWN"
+		return UNKOWN
 	}
 }
 

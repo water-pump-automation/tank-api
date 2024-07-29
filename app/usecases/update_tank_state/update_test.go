@@ -143,7 +143,7 @@ package update_tank_state
 // 	return
 // }
 
-// func (tank *waterTankUpdateMockData) GetTankGroupState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanks) (state []*water_tank.WaterTank, err error) {
+// func (tank *waterTankUpdateMockData) GetTankGroupState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanksInput) (state []*water_tank.WaterTank, err error) {
 // 	if group, exists := tank.states[groups[0]]; exists {
 // 		for _, tank := range group {
 // 			state = append(state, tank)

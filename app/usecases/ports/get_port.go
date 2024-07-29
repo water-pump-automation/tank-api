@@ -11,5 +11,9 @@ const (
 )
 
 type IGetCapacity interface {
-	GetMaximumCapacity(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankState) (maximumCapacity water_tank.Capacity, err error)
+	GetMaximumCapacity(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankStateInput) (maximumCapacity water_tank.Capacity, err error)
+}
+
+type ITankExists interface {
+	Exists(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankStateInput) (bool, error)
 }

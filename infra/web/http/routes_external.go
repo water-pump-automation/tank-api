@@ -3,11 +3,8 @@ package web
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"water-tank-api/app/entity/logs"
 	"water-tank-api/app/entity/validation"
-	"water-tank-api/app/entity/water_tank"
 	"water-tank-api/app/usecases/get_group"
 	"water-tank-api/app/usecases/get_tank"
 )
@@ -38,10 +35,10 @@ func (api *ExternalAPI) Route(mux *http.ServeMux) {
 		writer.WriteHeader(http.StatusOK)
 	})
 
-	mux.HandleFunc("/v1/water-tank/tank/{tank}", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v1/water-tank/tank/{tank_name}", func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case http.MethodGet:
-			getTankExternal(api, writer, request)
+			getTank(api, writer, request)
 		default:
 			http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -50,34 +47,22 @@ func (api *ExternalAPI) Route(mux *http.ServeMux) {
 	mux.HandleFunc("/v1/water-tank/group/{group}", func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case http.MethodGet:
-			getGroupExternal(api, writer, request)
+			getGroup(api, writer, request)
 		default:
 			http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-	mux.HandleFunc("/v1/water-tank/group", func(writer http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case http.MethodGet:
-			getGroupExternal(api, writer, request)
-		default:
-			http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
 }
 
-func getTankExternal(api *ExternalAPI, writer http.ResponseWriter, request *http.Request) {
+func getTank(api *ExternalAPI, writer http.ResponseWriter, request *http.Request) {
 	ctx := context.Background()
 
-	tankName := request.PathValue("tank")
-	groupName := request.Header.Get("group")
+	input := map[string]interface{}{
+		"tank_name": request.PathValue("tank_name"),
+		"group":     request.Header.Get("group"),
+	}
 
-	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank state, of group '%s'...", tankName, groupName))
-
-	response, err := api.getTankUsecase.Get(ctx, nil, &water_tank.GetWaterTankState{
-		TankName: tankName,
-		Group:    groupName,
-	})
+	response, err := api.getTankUsecase.Get(ctx, nil, input)
 
 	if _, ok := err.(validation.ValidationError); ok {
 		writeBadRequestError(writer, err)
@@ -113,15 +98,14 @@ func getTankExternal(api *ExternalAPI, writer http.ResponseWriter, request *http
 	writer.WriteHeader(http.StatusOK)
 }
 
-func getGroupExternal(api *ExternalAPI, writer http.ResponseWriter, request *http.Request) {
+func getGroup(api *ExternalAPI, writer http.ResponseWriter, request *http.Request) {
 	ctx := context.Background()
-	groupName := request.PathValue("group")
 
-	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", groupName))
+	input := map[string]interface{}{
+		"group": request.Header.Get("group"),
+	}
 
-	response, err := api.getGroupUsecase.Get(ctx, nil, &water_tank.GetGroupTanks{
-		Group: groupName,
-	})
+	response, err := api.getGroupUsecase.Get(ctx, nil, input)
 
 	if _, ok := err.(validation.ValidationError); ok {
 		writeBadRequestError(writer, err)

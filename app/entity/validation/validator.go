@@ -57,7 +57,7 @@ func (nameFormat) IsFormat(input interface{}) bool {
 		return false
 	}
 
-	r, _ := regexp.Compile("^[A-Z_]*$")
+	r, _ := regexp.Compile("^[A-Z_1-9]*$")
 
 	return r.MatchString(asString)
 }

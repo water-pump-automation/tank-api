@@ -3,8 +3,24 @@ package webserver
 import "os"
 
 var (
-	serverPort         = os.Getenv("SERVER_PORT")
-	databaseURI        = os.Getenv("DATABASE_URI")
-	databaseName       = os.Getenv("DATABASE_NAME")
-	databaseCollection = os.Getenv("DATABASE_COLLECTION")
+	serverPort         = getEnv("SERVER_PORT")
+	databaseURI        = getEnv("DATABASE_URI")
+	databaseName       = getEnv("DATABASE_NAME")
+	databaseCollection = getEnv("DATABASE_COLLECTION")
 )
+
+var defaultEnvs = map[string]string{
+	"SERVER_PORT":         "8080",
+	"DATABASE_URI":        "<INVALID>",
+	"DATABASE_NAME":       "archimedes",
+	"DATABASE_COLLECTION": "tanks",
+}
+
+func getEnv(env string) string {
+	value := os.Getenv(env)
+
+	if value == "" {
+		return defaultEnvs[env]
+	}
+	return value
+}

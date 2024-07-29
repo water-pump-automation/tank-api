@@ -11,7 +11,6 @@ import (
 
 	"water-tank-api/app/entity/logs"
 	"water-tank-api/app/usecases/create_tank"
-	"water-tank-api/app/usecases/get_group"
 	"water-tank-api/app/usecases/get_tank"
 	"water-tank-api/app/usecases/update_tank_state"
 	mongodb "water-tank-api/infra/database/mongoDB"
@@ -41,8 +40,6 @@ func Internal() {
 	getTankUsecase := get_tank.NewGetWaterTank(collection)
 
 	internalAPI := web.NewInternalAPI(
-		getTankUsecase,
-		get_group.NewGetGroupWaterTank(collection),
 		create_tank.NewWaterTank(collection, getTankUsecase),
 		update_tank_state.NewWaterTankUpdate(collection, getTankUsecase),
 	)

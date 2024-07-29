@@ -5,25 +5,25 @@ import (
 )
 
 type CreateInput struct {
-	TankName        string   `json:"tank_name"`
-	Group           string   `json:"group"`
-	MaximumCapacity Capacity `json:"maximum_capacity"`
+	TankName        string   `json:"tank_name,omitempty"`
+	Group           string   `json:"group,omitempty"`
+	MaximumCapacity Capacity `json:"maximum_capacity,omitempty"`
 }
 
 type UpdateWaterLevelInput struct {
-	TankName      string
-	Group         string
+	TankName      string `json:"tank_name,omitempty"`
+	Group         string `json:"group,omitempty"`
 	State         State
-	NewWaterLevel Capacity `json:"water_level"`
+	NewWaterLevel Capacity `json:"water_level,omitempty"`
 }
 
-type GetWaterTankState struct {
-	Group    string
-	TankName string
+type GetWaterTankStateInput struct {
+	Group    string `json:"group,omitempty"`
+	TankName string `json:"tank_name,omitempty"`
 }
 
-type GetGroupTanks struct {
-	Group string
+type GetGroupTanksInput struct {
+	Group string `json:"group,omitempty"`
 }
 
 type ConnCallback func(ctx context.Context)
@@ -41,6 +41,6 @@ type IConn interface {
 type IWaterTankDatabase interface {
 	CreateWaterTank(ctx context.Context, connection IConn, input *CreateInput) (tank *WaterTank, err error)
 	UpdateTankWaterLevel(ctx context.Context, connection IConn, input *UpdateWaterLevelInput) (tank *WaterTank, err error)
-	GetWaterTankState(ctx context.Context, connection IConn, input *GetWaterTankState) (tank *WaterTank, err error)
-	GetTankGroupState(ctx context.Context, connection IConn, input *GetGroupTanks) (tank []*WaterTank, err error)
+	GetWaterTankState(ctx context.Context, connection IConn, input *GetWaterTankStateInput) (tank *WaterTank, err error)
+	GetTankGroupState(ctx context.Context, connection IConn, input *GetGroupTanksInput) (tank []*WaterTank, err error)
 }

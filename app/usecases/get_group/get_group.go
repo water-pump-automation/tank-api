@@ -2,10 +2,12 @@ package get_group
 
 import (
 	"context"
+	"fmt"
 	"time"
-	"water-tank-api/app/entity/validation"
+	"water-tank-api/app/entity/logs"
 	"water-tank-api/app/entity/water_tank"
 	"water-tank-api/app/usecases/ports"
+	"water-tank-api/app/usecases/validate"
 )
 
 type GetGroupWaterTank struct {
@@ -18,17 +20,18 @@ func NewGetGroupWaterTank(tank water_tank.IWaterTankDatabase) *GetGroupWaterTank
 	}
 }
 
-func (conn *GetGroupWaterTank) Get(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanks) (response *ports.WaterTankGroupState, err error) {
+func (conn *GetGroupWaterTank) Get(ctx context.Context, connection water_tank.IConn, input ports.UsecaseInput) (response *ports.WaterTankGroupState, err error) {
+	var databaseInput water_tank.GetGroupTanksInput
 	var states []*water_tank.WaterTank
 	response = new(ports.WaterTankGroupState)
 
-	if validationErr, err := validation.Validate(ctx, input, validation.GetGroupSchemaLoader); err != nil {
+	if err := validate.ValidateInput(ctx, input, &databaseInput, GetGroupSchemaLoader); err != nil {
 		return nil, err
-	} else if validationErr != nil {
-		return nil, validationErr
 	}
 
-	states, err = conn.tank.GetTankGroupState(ctx, connection, input)
+	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", databaseInput.Group))
+
+	states, err = conn.tank.GetTankGroupState(ctx, connection, &databaseInput)
 	if err != nil {
 		return nil, ErrWaterTankErrorServerError(err.Error())
 	}
@@ -42,7 +45,7 @@ func (conn *GetGroupWaterTank) Get(ctx context.Context, connection water_tank.IC
 		state.Name = tank.Name
 		state.Group = tank.Group
 		state.MaximumCapacity = ports.ConvertCapacityToLiters(tank.MaximumCapacity)
-		state.TankState = ports.MapTankStateEnum(tank.TankState)
+		state.TankState = ports.ConvertState(ports.MapWaterState(tank.CurrentWaterLevel, tank.MaximumCapacity))
 		state.CurrentWaterLevel = ports.ConvertCapacityToLiters(tank.CurrentWaterLevel)
 		state.LastFullTime = tank.LastFullTime
 

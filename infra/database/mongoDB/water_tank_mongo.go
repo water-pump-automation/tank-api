@@ -31,6 +31,12 @@ type WaterTankMongoDB struct {
 	collection *mongo.Collection
 }
 
+func NewWaterTankMongoDB(collection *mongo.Collection) *WaterTankMongoDB {
+	return &WaterTankMongoDB{
+		collection: collection,
+	}
+}
+
 func (db *WaterTankMongoDB) CreateWaterTank(ctx context.Context, connection water_tank.IConn, input *water_tank.CreateInput) (state *water_tank.WaterTank, err error) {
 	return nil, errors.New("NOT IMPLEMENTED")
 }
@@ -40,11 +46,11 @@ func (db *WaterTankMongoDB) UpdateTankWaterLevel(ctx context.Context, connection
 
 }
 
-func (db *WaterTankMongoDB) GetWaterTankState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankState) (state *water_tank.WaterTank, err error) {
+func (db *WaterTankMongoDB) GetWaterTankState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankStateInput) (state *water_tank.WaterTank, err error) {
 	return nil, errors.New("NOT IMPLEMENTED")
 
 }
 
-func (db *WaterTankMongoDB) GetTankGroupState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanks) (state []*water_tank.WaterTank, err error) {
+func (db *WaterTankMongoDB) GetTankGroupState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanksInput) (state []*water_tank.WaterTank, err error) {
 	return nil, errors.New("NOT IMPLEMENTED")
 }

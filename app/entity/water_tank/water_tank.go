@@ -12,20 +12,14 @@ const (
 	Empty State = iota
 	Filling
 	Full
+	Invalid
 )
 
 type WaterTank struct {
-	// IDs
-	Name  string
-	Group string
-
-	// External updatable attributes
-	CurrentWaterLevel Capacity
-
-	// Internal updatable attributes
-	TankState    State
-	LastFullTime time.Time
-
-	// Fixed attributes
+	Name            string
+	Group           string
 	MaximumCapacity Capacity
+
+	CurrentWaterLevel Capacity
+	LastFullTime      time.Time
 }
