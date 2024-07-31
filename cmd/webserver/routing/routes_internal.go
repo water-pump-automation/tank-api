@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"tank-api/app/entity/validation"
 	"tank-api/app/usecases/create_tank"
 	"tank-api/app/usecases/update_tank_state"
+	"tank-api/app/usecases/validate"
 )
 
 type InternalAPI struct {
@@ -63,7 +63,7 @@ func createTank(api *InternalAPI, writer http.ResponseWriter, request *http.Requ
 
 	response, err := api.createTankUsecase.Create(ctx, input)
 
-	if _, ok := err.(validation.ValidationError); ok {
+	if _, ok := err.(validate.ValidationError); ok {
 		writeBadRequestError(writer, err)
 		return
 	}
@@ -110,7 +110,7 @@ func updateTank(api *InternalAPI, writer http.ResponseWriter, request *http.Requ
 
 	err = api.updateTankUsecase.Update(ctx, input)
 
-	if _, ok := err.(validation.ValidationError); ok {
+	if _, ok := err.(validate.ValidationError); ok {
 		writeBadRequestError(writer, err)
 		return
 	}

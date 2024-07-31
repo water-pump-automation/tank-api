@@ -25,7 +25,7 @@ func (conn *CreateTank) Create(ctx context.Context, input ports.UsecaseInput) (r
 	response = new(ports.TankState)
 	var databaseInput tank.CreateInput
 
-	if err := validate.ValidateInput(ctx, input, &databaseInput, CreateTankSchemaLoader); err != nil {
+	if err := validate.ValidateInput(input, &databaseInput, CreateTankSchemaLoader); err != nil {
 		return nil, err
 	}
 

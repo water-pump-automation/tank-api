@@ -52,7 +52,7 @@ func (conn *GetTank) Get(ctx context.Context, input ports.UsecaseInput) (respons
 	var state *tank.Tank
 	var databaseInput tank.GetTankStateInput
 
-	if err := validate.ValidateInput(ctx, input, &databaseInput, GetTankSchemaLoader); err != nil {
+	if err := validate.ValidateInput(input, &databaseInput, GetTankSchemaLoader); err != nil {
 		return nil, err
 	}
 

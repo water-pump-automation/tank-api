@@ -12,9 +12,9 @@ import (
 	"tank-api/app/entity/logs"
 	"tank-api/app/usecases/get_group"
 	"tank-api/app/usecases/get_tank"
+	web "tank-api/cmd/webserver/routing"
 	mongodb "tank-api/infra/database/mongoDB"
 	"tank-api/infra/logs/kafka"
-	web "tank-api/infra/web/http"
 
 	"github.com/IBM/sarama"
 )

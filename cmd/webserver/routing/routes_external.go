@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"tank-api/app/entity/validation"
 	"tank-api/app/usecases/get_group"
 	"tank-api/app/usecases/get_tank"
+	"tank-api/app/usecases/validate"
 )
 
 type ExternalAPI struct {
@@ -64,7 +64,7 @@ func getTank(api *ExternalAPI, writer http.ResponseWriter, request *http.Request
 
 	response, err := api.getTankUsecase.Get(ctx, input)
 
-	if _, ok := err.(validation.ValidationError); ok {
+	if _, ok := err.(validate.ValidationError); ok {
 		writeBadRequestError(writer, err)
 		return
 	}
@@ -107,7 +107,7 @@ func getGroup(api *ExternalAPI, writer http.ResponseWriter, request *http.Reques
 
 	response, err := api.getGroupUsecase.Get(ctx, input)
 
-	if _, ok := err.(validation.ValidationError); ok {
+	if _, ok := err.(validate.ValidationError); ok {
 		writeBadRequestError(writer, err)
 		return
 	}

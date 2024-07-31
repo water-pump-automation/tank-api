@@ -13,9 +13,9 @@ import (
 	"tank-api/app/usecases/create_tank"
 	"tank-api/app/usecases/get_tank"
 	"tank-api/app/usecases/update_tank_state"
+	web "tank-api/cmd/webserver/routing"
 	mongodb "tank-api/infra/database/mongoDB"
 	"tank-api/infra/logs/kafka"
-	web "tank-api/infra/web/http"
 
 	"github.com/IBM/sarama"
 )

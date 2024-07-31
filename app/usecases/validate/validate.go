@@ -1,14 +1,12 @@
 package validate
 
 import (
-	"context"
 	"encoding/json"
-	"tank-api/app/entity/validation"
 	"tank-api/app/usecases/ports"
 )
 
-func ValidateInput(ctx context.Context, input ports.UsecaseInput, databaseInput any, schemaLoader string) error {
-	validationErr, err := validation.Validate(ctx, input, schemaLoader)
+func ValidateInput(input ports.UsecaseInput, databaseInput any, schemaLoader string) error {
+	validationErr, err := validate(input, schemaLoader)
 
 	if err != nil {
 		return err

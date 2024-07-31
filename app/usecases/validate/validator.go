@@ -1,7 +1,6 @@
-package validation
+package validate
 
 import (
-	"context"
 	"encoding/json"
 	"regexp"
 	"strings"
@@ -13,7 +12,7 @@ func init() {
 	gojsonschema.FormatCheckers.Add("name_match", nameFormat{})
 }
 
-func Validate(ctx context.Context, loader interface{}, schemaLoader string) (ValidationError, error) {
+func validate(loader interface{}, schemaLoader string) (ValidationError, error) {
 	jsonLoader := gojsonschema.NewGoLoader(loader)
 	schema := gojsonschema.NewStringLoader(schemaLoader)
 

@@ -25,7 +25,7 @@ func (conn *GetGroupTank) Get(ctx context.Context, input ports.UsecaseInput) (re
 	var states []*tank.Tank
 	response = new(ports.TankGroupState)
 
-	if err := validate.ValidateInput(ctx, input, &databaseInput, GetGroupSchemaLoader); err != nil {
+	if err := validate.ValidateInput(input, &databaseInput, GetGroupSchemaLoader); err != nil {
 		return nil, err
 	}
 

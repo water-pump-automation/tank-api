@@ -25,7 +25,7 @@ func (conn *UpdateTank) Update(ctx context.Context, input ports.UsecaseInput) (e
 	var maximumCapacity tank.Capacity
 	var databaseInput tank.UpdateLevelInput
 
-	if err := validate.ValidateInput(ctx, input, &databaseInput, UpdateTankSchemaLoader); err != nil {
+	if err := validate.ValidateInput(input, &databaseInput, UpdateTankSchemaLoader); err != nil {
 		return err
 	}
 
