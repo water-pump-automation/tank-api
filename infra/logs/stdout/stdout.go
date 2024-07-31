@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"tank-api/app/entity/logs"
-	"time"
 )
 
 type STDOutLogger struct {
@@ -25,20 +24,14 @@ func (logger *STDOutLogger) Context(ctx context.Context) logs.ILogger {
 	return &STDOutLogger{}
 }
 
-func (logger *STDOutLogger) Error(message string) time.Time {
-	now := time.Now()
+func (logger *STDOutLogger) Error(message string) {
 	fmt.Printf("[%s] %s\n", logger.errorPrefix, message)
-	return now
 }
 
-func (logger *STDOutLogger) Fatal(message string) time.Time {
-	now := time.Now()
+func (logger *STDOutLogger) Fatal(message string) {
 	fmt.Printf("[%s] %s\n", logger.fatalPrefix, message)
-	return now
 }
 
-func (logger *STDOutLogger) Info(message string) time.Time {
-	now := time.Now()
+func (logger *STDOutLogger) Info(message string) {
 	fmt.Printf("[%s] %s\n", logger.infoPrefix, message)
-	return now
 }

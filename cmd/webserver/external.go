@@ -13,14 +13,21 @@ import (
 	"tank-api/app/usecases/get_group"
 	"tank-api/app/usecases/get_tank"
 	mongodb "tank-api/infra/database/mongoDB"
-	"tank-api/infra/logs/stdout"
+	"tank-api/infra/logs/kafka"
 	web "tank-api/infra/web/http"
+
+	"github.com/IBM/sarama"
 )
 
 func External() {
 	mainCtx := context.Background()
 
-	logs.SetLogger(stdout.NewSTDOutLogger())
+	version, err := sarama.ParseKafkaVersion("0.0.1")
+	if err != nil {
+		logs.Gateway().Fatal(fmt.Sprintf("Error parsing kafka version: %s", err.Error()))
+	}
+
+	logs.SetLogger(kafka.NewKafkaLogger(version, kafkaTopic, kafkaBrokers...))
 
 	mongoClient, err := mongodb.InitClient(mainCtx, databaseURI)
 	if err != nil {

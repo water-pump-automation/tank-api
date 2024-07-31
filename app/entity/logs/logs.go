@@ -3,18 +3,17 @@ package logs
 import (
 	"context"
 	"errors"
-	"time"
 )
 
 var (
-	TankErrorLoggerAlreadyInitialized = errors.New("Log gateway already initialized")
+	ErrTankLoggerAlreadyInitialized = errors.New("log gateway already initialized")
 )
 
 type ILogger interface {
 	Context(ctx context.Context) ILogger
-	Error(message string) time.Time
-	Fatal(message string) time.Time
-	Info(message string) time.Time
+	Error(message string)
+	Fatal(message string)
+	Info(message string)
 }
 
 var loggerGateway ILogger = nil
@@ -25,7 +24,7 @@ func SetLogger(logger ILogger) (err error) {
 		loggerGateway = logger
 	}
 
-	return TankErrorLoggerAlreadyInitialized
+	return ErrTankLoggerAlreadyInitialized
 }
 
 func Gateway() ILogger {
@@ -42,14 +41,8 @@ func (logger *_empty) Context(ctx context.Context) ILogger {
 	return &_empty{}
 }
 
-func (logger *_empty) Error(message string) time.Time {
-	return time.Now()
-}
+func (logger *_empty) Error(message string) {}
 
-func (logger *_empty) Fatal(message string) time.Time {
-	return time.Now()
-}
+func (logger *_empty) Fatal(message string) {}
 
-func (logger *_empty) Info(message string) time.Time {
-	return time.Now()
-}
+func (logger *_empty) Info(message string) {}
