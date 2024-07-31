@@ -11,7 +11,7 @@ __debug_bin*
 *.dll
 *.so
 *.dylib
-water-tank-api
+tank-api
 
 # Test binary, built with `go test -c`
 *.test

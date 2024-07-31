@@ -2,7 +2,7 @@ package main
 
 import (
 	"os"
-	"water-tank-api/cmd/webserver"
+	"tank-api/cmd/webserver"
 )
 
 var (

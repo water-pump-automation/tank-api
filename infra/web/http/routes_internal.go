@@ -4,19 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"water-tank-api/app/entity/validation"
-	"water-tank-api/app/usecases/create_tank"
-	"water-tank-api/app/usecases/update_tank_state"
+	"tank-api/app/entity/validation"
+	"tank-api/app/usecases/create_tank"
+	"tank-api/app/usecases/update_tank_state"
 )
 
 type InternalAPI struct {
-	createTankUsecase *create_tank.CreateWaterTank
-	updateTankUsecase *update_tank_state.UpdateWaterTank
+	createTankUsecase *create_tank.CreateTank
+	updateTankUsecase *update_tank_state.UpdateTank
 }
 
 func NewInternalAPI(
-	createTankUsecase *create_tank.CreateWaterTank,
-	updateTankUsecase *update_tank_state.UpdateWaterTank,
+	createTankUsecase *create_tank.CreateTank,
+	updateTankUsecase *update_tank_state.UpdateTank,
 ) *InternalAPI {
 	return &InternalAPI{
 		createTankUsecase: createTankUsecase,
@@ -34,7 +34,7 @@ func (api *InternalAPI) Route(mux *http.ServeMux) {
 		writer.WriteHeader(http.StatusOK)
 	})
 
-	mux.HandleFunc("/v1/water-tank", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v1/tank", func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case http.MethodPost:
 			createTank(api, writer, request)
@@ -43,7 +43,7 @@ func (api *InternalAPI) Route(mux *http.ServeMux) {
 		}
 	})
 
-	mux.HandleFunc("/v1/water-tank/tank/{tank_name}", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/v1/tank/{tank_name}", func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case http.MethodPatch:
 			updateTank(api, writer, request)
@@ -61,7 +61,7 @@ func createTank(api *InternalAPI, writer http.ResponseWriter, request *http.Requ
 		return
 	}
 
-	response, err := api.createTankUsecase.Create(ctx, nil, input)
+	response, err := api.createTankUsecase.Create(ctx, input)
 
 	if _, ok := err.(validation.ValidationError); ok {
 		writeBadRequestError(writer, err)
@@ -72,14 +72,14 @@ func createTank(api *InternalAPI, writer http.ResponseWriter, request *http.Requ
 		var errorBody []byte
 
 		switch err.Error() {
-		case create_tank.ErrWaterTankAlreadyExists.Error(), create_tank.ErrWaterTankInvalidGroup.Error(), create_tank.ErrWaterTankMaximumCapacityZero.Error(), create_tank.ErrWaterTankInvalidName.Error():
-			errorBody, err = getResponseBody(writer, NewAPIError(WaterTankInvalidRequest, err.Error()))
+		case create_tank.ErrTankAlreadyExists.Error(), create_tank.ErrTankInvalidGroup.Error(), create_tank.ErrTankMaximumCapacityZero.Error(), create_tank.ErrTankInvalidName.Error():
+			errorBody, err = getResponseBody(writer, NewAPIError(TankInvalidRequest, err.Error()))
 			if err != nil {
 				return
 			}
 			writer.WriteHeader(http.StatusUnprocessableEntity)
 		default:
-			errorBody, err = getResponseBody(writer, NewAPIError(WaterTankInternalServerError, err.Error()))
+			errorBody, err = getResponseBody(writer, NewAPIError(TankInternalServerError, err.Error()))
 			if err != nil {
 				return
 			}
@@ -108,7 +108,7 @@ func updateTank(api *InternalAPI, writer http.ResponseWriter, request *http.Requ
 	input["group"] = request.Header.Get("group")
 	input["tank_name"] = request.PathValue("tank_name")
 
-	err = api.updateTankUsecase.Update(ctx, nil, input)
+	err = api.updateTankUsecase.Update(ctx, input)
 
 	if _, ok := err.(validation.ValidationError); ok {
 		writeBadRequestError(writer, err)
@@ -119,20 +119,20 @@ func updateTank(api *InternalAPI, writer http.ResponseWriter, request *http.Requ
 		var errorBody []byte
 
 		switch err.Error() {
-		case update_tank_state.ErrWaterTankCurrentWaterLevelBiggerThanMax.Error(), update_tank_state.ErrWaterTankCurrentWaterLevelSmallerThanZero.Error():
-			errorBody, err = getResponseBody(writer, NewAPIError(WaterTankInvalidRequest, err.Error()))
+		case update_tank_state.ErrTankCurrentLevelBiggerThanMax.Error(), update_tank_state.ErrTankCurrentLevelSmallerThanZero.Error():
+			errorBody, err = getResponseBody(writer, NewAPIError(TankInvalidRequest, err.Error()))
 			if err != nil {
 				return
 			}
 			writer.WriteHeader(http.StatusUnprocessableEntity)
-		case update_tank_state.ErrWaterTankErrorNotFound.Error():
-			errorBody, err = getResponseBody(writer, NewAPIError(WaterTankNotFound, err.Error()))
+		case update_tank_state.ErrTankErrorNotFound.Error():
+			errorBody, err = getResponseBody(writer, NewAPIError(TankNotFound, err.Error()))
 			if err != nil {
 				return
 			}
 			writer.WriteHeader(http.StatusNotFound)
 		default:
-			errorBody, err = getResponseBody(writer, NewAPIError(WaterTankInternalServerError, err.Error()))
+			errorBody, err = getResponseBody(writer, NewAPIError(TankInternalServerError, err.Error()))
 			if err != nil {
 				return
 			}

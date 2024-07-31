@@ -3,8 +3,8 @@ package validate
 import (
 	"context"
 	"encoding/json"
-	"water-tank-api/app/entity/validation"
-	"water-tank-api/app/usecases/ports"
+	"tank-api/app/entity/validation"
+	"tank-api/app/usecases/ports"
 )
 
 func ValidateInput(ctx context.Context, input ports.UsecaseInput, databaseInput any, schemaLoader string) error {

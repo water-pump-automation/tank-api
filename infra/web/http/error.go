@@ -3,10 +3,10 @@ package web
 import "encoding/json"
 
 var (
-	WaterTankNotFound            = "WATERTANK_404"
-	WaterTankBadRequest          = "WATERTANK_400"
-	WaterTankInvalidRequest      = "WATERTANK_422"
-	WaterTankInternalServerError = "WATERTANK_500"
+	TankNotFound            = "TANK_404"
+	TankBadRequest          = "TANK_400"
+	TankInvalidRequest      = "TANK_422"
+	TankInternalServerError = "TANK_500"
 )
 
 type APIError struct {

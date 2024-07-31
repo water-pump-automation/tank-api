@@ -3,8 +3,8 @@ package stdout
 import (
 	"context"
 	"fmt"
+	"tank-api/app/entity/logs"
 	"time"
-	"water-tank-api/app/entity/logs"
 )
 
 type STDOutLogger struct {

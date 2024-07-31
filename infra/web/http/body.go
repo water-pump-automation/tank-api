@@ -16,7 +16,7 @@ func getResponseBody(writer http.ResponseWriter, response any) (responseBytes []
 }
 
 func writeBadRequestError(writer http.ResponseWriter, err error) {
-	errorBody, err := getResponseBody(writer, NewAPIValidationError(WaterTankBadRequest, err.Error()))
+	errorBody, err := getResponseBody(writer, NewAPIValidationError(TankBadRequest, err.Error()))
 	if err != nil {
 		return
 	}

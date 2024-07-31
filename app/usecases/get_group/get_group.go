@@ -3,27 +3,27 @@ package get_group
 import (
 	"context"
 	"fmt"
+	"tank-api/app/entity/logs"
+	"tank-api/app/entity/tank"
+	"tank-api/app/usecases/ports"
+	"tank-api/app/usecases/validate"
 	"time"
-	"water-tank-api/app/entity/logs"
-	"water-tank-api/app/entity/water_tank"
-	"water-tank-api/app/usecases/ports"
-	"water-tank-api/app/usecases/validate"
 )
 
-type GetGroupWaterTank struct {
-	tank water_tank.IWaterTankDatabase
+type GetGroupTank struct {
+	tank tank.ITankDatabase
 }
 
-func NewGetGroupWaterTank(tank water_tank.IWaterTankDatabase) *GetGroupWaterTank {
-	return &GetGroupWaterTank{
+func NewGetGroupTank(tank tank.ITankDatabase) *GetGroupTank {
+	return &GetGroupTank{
 		tank: tank,
 	}
 }
 
-func (conn *GetGroupWaterTank) Get(ctx context.Context, connection water_tank.IConn, input ports.UsecaseInput) (response *ports.WaterTankGroupState, err error) {
-	var databaseInput water_tank.GetGroupTanksInput
-	var states []*water_tank.WaterTank
-	response = new(ports.WaterTankGroupState)
+func (conn *GetGroupTank) Get(ctx context.Context, input ports.UsecaseInput) (response *ports.TankGroupState, err error) {
+	var databaseInput tank.GetGroupTanksInput
+	var states []*tank.Tank
+	response = new(ports.TankGroupState)
 
 	if err := validate.ValidateInput(ctx, input, &databaseInput, GetGroupSchemaLoader); err != nil {
 		return nil, err
@@ -31,22 +31,22 @@ func (conn *GetGroupWaterTank) Get(ctx context.Context, connection water_tank.IC
 
 	logs.Gateway().Info(fmt.Sprintf("Retrieving '%s' tank group...", databaseInput.Group))
 
-	states, err = conn.tank.GetTankGroupState(ctx, connection, &databaseInput)
+	states, err = conn.tank.GetTankGroupState(ctx, &databaseInput)
 	if err != nil {
-		return nil, ErrWaterTankErrorServerError(err.Error())
+		return nil, ErrTankErrorServerError(err.Error())
 	}
 
 	if len(states) == 0 {
-		return nil, ErrWaterTankErrorGroupNotFound
+		return nil, ErrTankErrorGroupNotFound
 	}
 
 	for _, tank := range states {
-		state := new(ports.WaterTankState)
+		state := new(ports.TankState)
 		state.Name = tank.Name
 		state.Group = tank.Group
 		state.MaximumCapacity = ports.ConvertCapacityToLiters(tank.MaximumCapacity)
-		state.TankState = ports.ConvertState(ports.MapWaterState(tank.CurrentWaterLevel, tank.MaximumCapacity))
-		state.CurrentWaterLevel = ports.ConvertCapacityToLiters(tank.CurrentWaterLevel)
+		state.TankState = ports.ConvertState(ports.MapState(tank.CurrentLevel, tank.MaximumCapacity))
+		state.CurrentLevel = ports.ConvertCapacityToLiters(tank.CurrentLevel)
 		state.LastFullTime = tank.LastFullTime
 
 		response.Tanks = append(response.Tanks, state)

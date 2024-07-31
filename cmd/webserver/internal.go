@@ -9,13 +9,13 @@ import (
 	"syscall"
 	"time"
 
-	"water-tank-api/app/entity/logs"
-	"water-tank-api/app/usecases/create_tank"
-	"water-tank-api/app/usecases/get_tank"
-	"water-tank-api/app/usecases/update_tank_state"
-	mongodb "water-tank-api/infra/database/mongoDB"
-	"water-tank-api/infra/logs/stdout"
-	web "water-tank-api/infra/web/http"
+	"tank-api/app/entity/logs"
+	"tank-api/app/usecases/create_tank"
+	"tank-api/app/usecases/get_tank"
+	"tank-api/app/usecases/update_tank_state"
+	mongodb "tank-api/infra/database/mongoDB"
+	"tank-api/infra/logs/stdout"
+	web "tank-api/infra/web/http"
 )
 
 func Internal() {
@@ -35,13 +35,13 @@ func Internal() {
 		Handler: mux,
 	}
 
-	collection := mongodb.NewCollection(mainCtx, mongoClient, databaseName, databaseCollection)
+	collection := mongodb.NewCollection(mainCtx, mongoClient, databaseName, tankCollection, stateCollection)
 
-	getTankUsecase := get_tank.NewGetWaterTank(collection)
+	getTankUsecase := get_tank.NewGetTank(collection)
 
 	internalAPI := web.NewInternalAPI(
-		create_tank.NewWaterTank(collection, getTankUsecase),
-		update_tank_state.NewWaterTankUpdate(collection, getTankUsecase),
+		create_tank.NewTank(collection, getTankUsecase),
+		update_tank_state.NewTankUpdate(collection, getTankUsecase),
 	)
 
 	internalAPI.Route(mux)

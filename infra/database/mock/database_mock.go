@@ -2,99 +2,84 @@ package database_mock
 
 import (
 	"context"
+	"tank-api/app/entity/tank"
 	"time"
-	"water-tank-api/app/entity/water_tank"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type MongoPool struct{}
-
-func (*MongoPool) Acquire() (water_tank.IConn, error) {
-	return nil, nil
-}
-func (*MongoPool) AcquireTransaction() (water_tank.IConn, error) {
-	return nil, nil
+type TankMockData struct {
+	states map[string]map[string]*tank.Tank
 }
 
-type MongoConn struct{}
-
-func (*MongoConn) Release() error {
-	return nil
+func ptr(datetime time.Time) *time.Time {
+	return &datetime
 }
 
-func (*MongoConn) Query(ctx context.Context, callback water_tank.ConnCallback) {
-	//
-}
+var MockTimeNow = ptr(time.Now())
 
-type WaterTankMockData struct {
-	states map[string]map[string]*water_tank.WaterTank
-}
-
-var MockTimeNow = time.Now()
-
-func NewWaterTankMockData(collection *mongo.Collection) *WaterTankMockData {
-	return &WaterTankMockData{
-		states: map[string]map[string]*water_tank.WaterTank{
+func NewTankMockData(collection *mongo.Collection) *TankMockData {
+	return &TankMockData{
+		states: map[string]map[string]*tank.Tank{
 			"GROUP_1": {
 				"TANK_1": {
-					Name:              "TANK_1",
-					Group:             "GROUP_1",
-					MaximumCapacity:   100,
-					CurrentWaterLevel: 0,
-					LastFullTime:      MockTimeNow,
+					Name:            "TANK_1",
+					Group:           "GROUP_1",
+					MaximumCapacity: 100,
+					CurrentLevel:    0,
+					LastFullTime:    MockTimeNow,
 				},
 				"TANK_2": {
-					Name:              "TANK_2",
-					Group:             "GROUP_1",
-					MaximumCapacity:   80,
-					CurrentWaterLevel: 50,
-					LastFullTime:      MockTimeNow,
+					Name:            "TANK_2",
+					Group:           "GROUP_1",
+					MaximumCapacity: 80,
+					CurrentLevel:    50,
+					LastFullTime:    MockTimeNow,
 				},
 				"TANK_3": {
-					Name:              "TANK_3",
-					Group:             "GROUP_1",
-					MaximumCapacity:   120,
-					CurrentWaterLevel: 120,
-					LastFullTime:      MockTimeNow,
+					Name:            "TANK_3",
+					Group:           "GROUP_1",
+					MaximumCapacity: 120,
+					CurrentLevel:    120,
+					LastFullTime:    MockTimeNow,
 				},
 			},
 			"GROUP_2": {
 				"TANK_1": {
-					Name:              "TANK_1",
-					Group:             "GROUP_2",
-					MaximumCapacity:   100,
-					CurrentWaterLevel: 0,
-					LastFullTime:      MockTimeNow,
+					Name:            "TANK_1",
+					Group:           "GROUP_2",
+					MaximumCapacity: 100,
+					CurrentLevel:    0,
+					LastFullTime:    MockTimeNow,
 				},
 				"TANK_2": {
-					Name:              "TANK_2",
-					Group:             "GROUP_2",
-					MaximumCapacity:   80,
-					CurrentWaterLevel: 80,
-					LastFullTime:      MockTimeNow,
+					Name:            "TANK_2",
+					Group:           "GROUP_2",
+					MaximumCapacity: 80,
+					CurrentLevel:    80,
+					LastFullTime:    MockTimeNow,
 				},
 			},
 			"GROUP_3": {
 				"TANK_1": {
-					Name:              "TANK_1",
-					Group:             "GROUP_3",
-					MaximumCapacity:   120,
-					CurrentWaterLevel: 90,
-					LastFullTime:      MockTimeNow,
+					Name:            "TANK_1",
+					Group:           "GROUP_3",
+					MaximumCapacity: 120,
+					CurrentLevel:    90,
+					LastFullTime:    MockTimeNow,
 				},
 			},
 		},
 	}
 }
 
-func (tank *WaterTankMockData) GetWaterTankState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankStateInput) (state *water_tank.WaterTank, err error) {
-	state = tank.states[input.Group][input.TankName]
+func (data *TankMockData) GetTankState(ctx context.Context, input *tank.GetTankStateInput) (state *tank.Tank, err error) {
+	state = data.states[input.Group][input.TankName]
 	return
 }
 
-func (tank *WaterTankMockData) GetTankGroupState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanksInput) (state []*water_tank.WaterTank, err error) {
-	if group, exists := tank.states[input.Group]; exists {
+func (data *TankMockData) GetTankGroupState(ctx context.Context, input *tank.GetGroupTanksInput) (state []*tank.Tank, err error) {
+	if group, exists := data.states[input.Group]; exists {
 		for _, tank := range group {
 			state = append(state, tank)
 		}
@@ -102,32 +87,32 @@ func (tank *WaterTankMockData) GetTankGroupState(ctx context.Context, connection
 	return
 }
 
-func (tank *WaterTankMockData) CreateWaterTank(ctx context.Context, connection water_tank.IConn, input *water_tank.CreateInput) (state *water_tank.WaterTank, err error) {
-	if _, exists := tank.states[input.Group]; !exists {
-		tank.states[input.Group] = map[string]*water_tank.WaterTank{
+func (data *TankMockData) CreateTank(ctx context.Context, input *tank.CreateInput) (state *tank.Tank, err error) {
+	if _, exists := data.states[input.Group]; !exists {
+		data.states[input.Group] = map[string]*tank.Tank{
 			input.TankName: {
-				Name:              input.TankName,
-				Group:             input.Group,
-				MaximumCapacity:   input.MaximumCapacity,
-				CurrentWaterLevel: 0,
+				Name:            input.TankName,
+				Group:           input.Group,
+				MaximumCapacity: input.MaximumCapacity,
+				CurrentLevel:    0,
 			},
 		}
 		return
 	}
 
-	tank.states[input.Group][input.TankName] = &water_tank.WaterTank{
-		Name:              input.TankName,
-		Group:             input.Group,
-		MaximumCapacity:   input.MaximumCapacity,
-		CurrentWaterLevel: 0,
+	data.states[input.Group][input.TankName] = &tank.Tank{
+		Name:            input.TankName,
+		Group:           input.Group,
+		MaximumCapacity: input.MaximumCapacity,
+		CurrentLevel:    0,
 	}
 
 	return
 }
 
-func (tank *WaterTankMockData) UpdateTankWaterLevel(ctx context.Context, connection water_tank.IConn, input *water_tank.UpdateWaterLevelInput) (state *water_tank.WaterTank, err error) {
-	if group, exists := tank.states[input.TankName]; exists {
-		group[input.TankName].CurrentWaterLevel = input.NewWaterLevel
+func (data *TankMockData) UpdateTankLevel(ctx context.Context, input *tank.UpdateLevelInput) (state *tank.Tank, err error) {
+	if group, exists := data.states[input.TankName]; exists {
+		group[input.TankName].CurrentLevel = input.NewLevel
 	}
 	return
 }

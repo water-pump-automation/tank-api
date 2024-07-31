@@ -1,4 +1,4 @@
-package water_tank
+package tank
 
 import (
 	"time"
@@ -15,11 +15,12 @@ const (
 	Invalid
 )
 
-type WaterTank struct {
+type Tank struct {
+	ID              string
 	Name            string
 	Group           string
 	MaximumCapacity Capacity
 
-	CurrentWaterLevel Capacity
-	LastFullTime      time.Time
+	CurrentLevel Capacity
+	LastFullTime *time.Time
 }

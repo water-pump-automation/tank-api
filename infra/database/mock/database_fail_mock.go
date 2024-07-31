@@ -3,27 +3,27 @@ package database_mock
 import (
 	"context"
 	"errors"
-	"water-tank-api/app/entity/water_tank"
+	"tank-api/app/entity/tank"
 )
 
-type WaterTankFailMockData struct{}
+type TankFailMockData struct{}
 
-func NewWaterTankFailMockData() *WaterTankFailMockData {
-	return &WaterTankFailMockData{}
+func NewTankFailMockData() *TankFailMockData {
+	return &TankFailMockData{}
 }
 
-func (tank *WaterTankFailMockData) GetWaterTankState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetWaterTankStateInput) (state *water_tank.WaterTank, err error) {
+func (tank *TankFailMockData) GetTankState(ctx context.Context, input *tank.GetTankStateInput) (state *tank.Tank, err error) {
 	return nil, errors.New("ERROR")
 }
 
-func (tank *WaterTankFailMockData) GetTankGroupState(ctx context.Context, connection water_tank.IConn, input *water_tank.GetGroupTanksInput) (state []*water_tank.WaterTank, err error) {
+func (tank *TankFailMockData) GetTankGroupState(ctx context.Context, input *tank.GetGroupTanksInput) (state []*tank.Tank, err error) {
 	return nil, errors.New("ERROR")
 }
 
-func (tank *WaterTankFailMockData) CreateWaterTank(ctx context.Context, connection water_tank.IConn, input *water_tank.CreateInput) (tankState *water_tank.WaterTank, err error) {
+func (tank *TankFailMockData) CreateTank(ctx context.Context, input *tank.CreateInput) (tankState *tank.Tank, err error) {
 	return nil, errors.New("ERROR")
 }
 
-func (tank *WaterTankFailMockData) UpdateTankWaterLevel(ctx context.Context, connection water_tank.IConn, input *water_tank.UpdateWaterLevelInput) (state *water_tank.WaterTank, err error) {
+func (tank *TankFailMockData) UpdateTankLevel(ctx context.Context, input *tank.UpdateLevelInput) (state *tank.Tank, err error) {
 	return nil, errors.New("ERROR")
 }

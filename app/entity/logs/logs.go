@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	WaterTankErrorLoggerAlreadyInitialized = errors.New("Log gateway already initialized")
+	TankErrorLoggerAlreadyInitialized = errors.New("Log gateway already initialized")
 )
 
 type ILogger interface {
@@ -25,7 +25,7 @@ func SetLogger(logger ILogger) (err error) {
 		loggerGateway = logger
 	}
 
-	return WaterTankErrorLoggerAlreadyInitialized
+	return TankErrorLoggerAlreadyInitialized
 }
 
 func Gateway() ILogger {

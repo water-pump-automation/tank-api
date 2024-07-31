@@ -1,4 +1,4 @@
-# water-tank-api
+# tank-api
 This API is divided into `Internal` (read-only) and `External` (write-only) endpoints.
 
 ## Deploy options
@@ -15,20 +15,20 @@ But, each API can also be deploy running build separately:
 - `Internal`
 
 ``` bash
-docker-compose build water-tank-api-internal-v1
-docker run lo-han/water-tank-api-internal-v1 -p 8081:8080
+docker-compose build tank-api-internal-v1
+docker run lo-han/tank-api-internal-v1 -p 8081:8080
 ```
 
 - `External`
 
 ``` bash
-docker-compose build water-tank-api-external-v1
-docker run lo-han/water-tank-api-external-v1 -p 8082:8080
+docker-compose build tank-api-external-v1
+docker run lo-han/tank-api-external-v1 -p 8082:8080
 ```
 
 ## Endpoints
 
-### /v1/water-tank/
+### /v1/tank
 
 #### [POST] [Internal]
 
@@ -50,7 +50,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 ##### Success response example
 ``` json
 {
-    "current_water_level": "0.00L",
+    "current_level": "0.00L",
     "datetime": "2023-09-25T19:34:39.775746328Z",
     "group": "GROUP_2",
     "maximum_capacity": "45.00L",
@@ -59,7 +59,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 }
 ```
 
-### /v1/water-tank/tank/{tank_name}
+### /v1/tank/{tank_name}
 
 #### [PATCH] [Internal]
 
@@ -77,7 +77,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 ##### Request body example
 ``` json
 {
-    "water_level": 10
+    "level": 10
 }
 ```
 
@@ -96,7 +96,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 ##### Success response example
 ``` json
 {
-    "current_water_level": "90.00L",
+    "current_level": "90.00L",
     "datetime": "2023-09-25T19:34:39.775746328Z",
     "group": "GROUP_3",
     "maximum_capacity": "120.00L",
@@ -105,7 +105,7 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
 }
 ```
 
-### /v1/water-tank/group/{group}
+### /v1/group/{group}
 
 #### [GET] [External]
 
@@ -121,21 +121,21 @@ docker run lo-han/water-tank-api-external-v1 -p 8082:8080
     "datetime": "2023-09-25T19:36:20.721605065Z",
     "tanks": [
         {
-            "current_water_level": "0.00L",
+            "current_level": "0.00L",
             "group": "GROUP_1",
             "maximum_capacity": "100.00L",
             "name": "TANK_1",
             "tank_state": "EMPTY"
         },
         {
-            "current_water_level": "50.00L",
+            "current_level": "50.00L",
             "group": "GROUP_1",
             "maximum_capacity": "80.00L",
             "name": "TANK_2",
             "tank_state": "FILLING"
         },
         {
-            "current_water_level": "120.00L",
+            "current_level": "120.00L",
             "group": "GROUP_1",
             "maximum_capacity": "120.00L",
             "name": "TANK_3",

@@ -1,4 +1,4 @@
-module water-tank-api
+module tank-api
 
 go 1.22
 

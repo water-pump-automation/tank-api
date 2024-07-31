@@ -3,27 +3,27 @@ package create_tank
 import (
 	"context"
 	"fmt"
-	"water-tank-api/app/entity/logs"
-	"water-tank-api/app/entity/water_tank"
-	"water-tank-api/app/usecases/ports"
-	"water-tank-api/app/usecases/validate"
+	"tank-api/app/entity/logs"
+	"tank-api/app/entity/tank"
+	"tank-api/app/usecases/ports"
+	"tank-api/app/usecases/validate"
 )
 
-type CreateWaterTank struct {
-	tank       water_tank.IWaterTankDatabase
+type CreateTank struct {
+	tank       tank.ITankDatabase
 	tankExists ports.ITankExists
 }
 
-func NewWaterTank(tank water_tank.IWaterTankDatabase, tankExists ports.ITankExists) *CreateWaterTank {
-	return &CreateWaterTank{
+func NewTank(tank tank.ITankDatabase, tankExists ports.ITankExists) *CreateTank {
+	return &CreateTank{
 		tank:       tank,
 		tankExists: tankExists,
 	}
 }
 
-func (conn *CreateWaterTank) Create(ctx context.Context, connection water_tank.IConn, input ports.UsecaseInput) (response *ports.WaterTankState, err error) {
-	response = new(ports.WaterTankState)
-	var databaseInput water_tank.CreateInput
+func (conn *CreateTank) Create(ctx context.Context, input ports.UsecaseInput) (response *ports.TankState, err error) {
+	response = new(ports.TankState)
+	var databaseInput tank.CreateInput
 
 	if err := validate.ValidateInput(ctx, input, &databaseInput, CreateTankSchemaLoader); err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (conn *CreateWaterTank) Create(ctx context.Context, connection water_tank.I
 			databaseInput.TankName, databaseInput.Group, ports.ConvertCapacityToLiters(databaseInput.MaximumCapacity)),
 	)
 
-	exists, err := conn.tankExists.Exists(ctx, connection, &water_tank.GetWaterTankStateInput{
+	exists, err := conn.tankExists.Exists(ctx, &tank.GetTankStateInput{
 		TankName: databaseInput.TankName,
 		Group:    databaseInput.Group,
 	})
@@ -43,33 +43,33 @@ func (conn *CreateWaterTank) Create(ctx context.Context, connection water_tank.I
 	}
 
 	if exists {
-		return nil, ErrWaterTankAlreadyExists
+		return nil, ErrTankAlreadyExists
 	}
 
 	if databaseInput.MaximumCapacity <= 0 {
-		return nil, ErrWaterTankMaximumCapacityZero
+		return nil, ErrTankMaximumCapacityZero
 	}
 
 	if databaseInput.TankName == "" {
-		return nil, ErrWaterTankInvalidName
+		return nil, ErrTankInvalidName
 	}
 
 	if databaseInput.Group == "" {
-		return nil, ErrWaterTankInvalidGroup
+		return nil, ErrTankInvalidGroup
 	}
 
-	tankSate, createErr := conn.tank.CreateWaterTank(ctx, connection, &databaseInput)
+	tankState, createErr := conn.tank.CreateTank(ctx, &databaseInput)
 
 	if createErr != nil {
-		return nil, ErrWaterTankErrorServerError(createErr.Error())
+		return nil, ErrTankErrorServerError(createErr.Error())
 	}
 
-	response.Name = tankSate.Name
-	response.Group = tankSate.Group
-	response.MaximumCapacity = ports.ConvertCapacityToLiters(tankSate.MaximumCapacity)
-	response.TankState = ports.EMPTY
-	response.CurrentWaterLevel = ports.ConvertCapacityToLiters(tankSate.CurrentWaterLevel)
-	response.LastFullTime = tankSate.LastFullTime
+	response.Name = tankState.Name
+	response.Group = tankState.Group
+	response.MaximumCapacity = ports.ConvertCapacityToLiters(tankState.MaximumCapacity)
+	response.TankState = ports.ConvertState(ports.MapState(tankState.CurrentLevel, tankState.MaximumCapacity))
+	response.CurrentLevel = ports.ConvertCapacityToLiters(tankState.CurrentLevel)
+	response.LastFullTime = tankState.LastFullTime
 
 	return
 }

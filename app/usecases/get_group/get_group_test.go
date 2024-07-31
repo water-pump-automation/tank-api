@@ -3,15 +3,15 @@ package get_group
 // import (
 // 	"errors"
 // 	"testing"
-// 	"water-tank-api/app/usecases/ports"
-// 	database_mock "water-tank-api/infra/database/mock"
+// 	"tank-api/app/usecases/ports"
+// 	database_mock "tank-api/infra/database/mock"
 // )
 
-// var successGetWaterTank = NewGetGroupWaterTank(database_mock.NewWaterTankMockData())
-// var failGetWaterTank = NewGetGroupWaterTank(database_mock.NewWaterTankFailMockData())
+// var successGetTank = NewGetGroupTank(database_mock.NewTankMockData())
+// var failGetTank = NewGetGroupTank(database_mock.NewTankFailMockData())
 
-// func existsInResponse(expected, got *ports.WaterTankGroupState) (string, bool) {
-// 	states := map[string]*ports.WaterTankState{}
+// func existsInResponse(expected, got *ports.TankGroupState) (string, bool) {
+// 	states := map[string]*ports.TankState{}
 
 // 	for _, gotState := range got.Tanks {
 // 		states[gotState.Name] = gotState
@@ -26,8 +26,8 @@ package get_group
 // 	return "", true
 // }
 
-// func responsesAreEqual(expected, got *ports.WaterTankGroupState) (string, string, bool) {
-// 	states := map[string]*ports.WaterTankState{}
+// func responsesAreEqual(expected, got *ports.TankGroupState) (string, string, bool) {
+// 	states := map[string]*ports.TankState{}
 
 // 	for _, gotState := range got.Tanks {
 // 		states[gotState.Name] = gotState
@@ -51,8 +51,8 @@ package get_group
 // 				return "TankState", gotState.TankState, false
 // 			}
 
-// 			if state.CurrentWaterLevel != gotState.CurrentWaterLevel {
-// 				return "CurrentWaterLevel", gotState.CurrentWaterLevel, false
+// 			if state.CurrentLevel != gotState.CurrentLevel {
+// 				return "CurrentLevel", gotState.CurrentLevel, false
 // 			}
 
 // 			if state.LastFullTime != gotState.LastFullTime {
@@ -64,16 +64,16 @@ package get_group
 // 	return "", "", true
 // }
 
-// func Test_GetGroupWaterTank_Get(t *testing.T) {
-// 	t.Run("Succesful data water tank group", func(t *testing.T) {
-// 		expectedReturn := &ports.WaterTankGroupState{
-// 			Tanks: []*ports.WaterTankState{
+// func Test_GetGroupTank_Get(t *testing.T) {
+// 	t.Run("Succesful data  tank group", func(t *testing.T) {
+// 		expectedReturn := &ports.TankGroupState{
+// 			Tanks: []*ports.TankState{
 // 				{
 // 					Name:              "TANK_1",
 // 					Group:             "GROUP_1",
 // 					MaximumCapacity:   "100.00L",
 // 					TankState:         "EMPTY",
-// 					CurrentWaterLevel: "0.00L",
+// 					CurrentLevel: "0.00L",
 // 					LastFullTime:      database_mock.MockTimeNow,
 // 				},
 // 				{
@@ -81,7 +81,7 @@ package get_group
 // 					Group:             "GROUP_1",
 // 					MaximumCapacity:   "80.00L",
 // 					TankState:         "FILLING",
-// 					CurrentWaterLevel: "50.00L",
+// 					CurrentLevel: "50.00L",
 // 					LastFullTime:      database_mock.MockTimeNow,
 // 				},
 // 				{
@@ -89,60 +89,60 @@ package get_group
 // 					Group:             "GROUP_1",
 // 					MaximumCapacity:   "120.00L",
 // 					TankState:         "FULL",
-// 					CurrentWaterLevel: "120.00L",
+// 					CurrentLevel: "120.00L",
 // 					LastFullTime:      database_mock.MockTimeNow,
 // 				},
 // 			},
 // 		}
 
-// 		state, err := successGetWaterTank.Get("GROUP_1")
+// 		state, err := successGetTank.Get("GROUP_1")
 
 // 		if err != nil {
-// 			t.Error("Test_GetGroupWaterTank_Get() shouldn't report an error, but it have")
+// 			t.Error("Test_GetGroupTank_Get() shouldn't report an error, but it have")
 // 		}
 
 // 		if tank, equal := existsInResponse(expectedReturn, state); !equal {
-// 			t.Errorf("Test_GetGroupWaterTank_Get() didn't foud '%s' tank", tank)
+// 			t.Errorf("Test_GetGroupTank_Get() didn't foud '%s' tank", tank)
 // 		}
 
 // 		if field, value, equal := responsesAreEqual(expectedReturn, state); !equal {
-// 			t.Errorf("Test_GetGroupWaterTank_Get() wrong '%s' field, got '%s'", field, value)
+// 			t.Errorf("Test_GetGroupTank_Get() wrong '%s' field, got '%s'", field, value)
 // 		}
 // 	})
 
-// 	t.Run("Not found data water tank group", func(t *testing.T) {
-// 		_, err := successGetWaterTank.Get("GROUP_123532")
+// 	t.Run("Not found data  tank group", func(t *testing.T) {
+// 		_, err := successGetTank.Get("GROUP_123532")
 
 // 		if !err != nil {
-// 			t.Error("Test_GetGroupWaterTank_Get() should report an error, but it haven't")
+// 			t.Error("Test_GetGroupTank_Get() should report an error, but it haven't")
 // 		}
 
-// 		if err.LastUsecaseError().Error() != ErrWaterTankErrorGroupNotFound("GROUP_123532").Error() {
-// 			t.Errorf("Test_GetGroupWaterTank_Get() wrong error. Should return '%s', got '%s'", ErrWaterTankErrorGroupNotFound("TANK_134256"), err.LastUsecaseError())
+// 		if err.LastUsecaseError().Error() != ErrTankErrorGroupNotFound("GROUP_123532").Error() {
+// 			t.Errorf("Test_GetGroupTank_Get() wrong error. Should return '%s', got '%s'", ErrTankErrorGroupNotFound("TANK_134256"), err.LastUsecaseError())
 // 		}
 // 	})
 
-// 	t.Run("Invalid name in data water tank group", func(t *testing.T) {
-// 		_, err := successGetWaterTank.Get("")
+// 	t.Run("Invalid name in data  tank group", func(t *testing.T) {
+// 		_, err := successGetTank.Get("")
 
 // 		if !err != nil {
-// 			t.Error("Test_GetGroupWaterTank_Get() should report an error, but it haven't")
+// 			t.Error("Test_GetGroupTank_Get() should report an error, but it haven't")
 // 		}
 
-// 		if err.LastUsecaseError() != ErrWaterTankMissingGroup {
-// 			t.Errorf("Test_GetGroupWaterTank_Get() wrong error. Should return '%s', got '%s'", ErrWaterTankMissingGroup.Error(), err.LastUsecaseError())
+// 		if err.LastUsecaseError() != ErrTankMissingGroup {
+// 			t.Errorf("Test_GetGroupTank_Get() wrong error. Should return '%s', got '%s'", ErrTankMissingGroup.Error(), err.LastUsecaseError())
 // 		}
 // 	})
 
-// 	t.Run("Internal server error getting water tank group", func(t *testing.T) {
-// 		_, err := failGetWaterTank.Get("GROUP_1")
+// 	t.Run("Internal server error getting  tank group", func(t *testing.T) {
+// 		_, err := failGetTank.Get("GROUP_1")
 
 // 		if !err != nil {
-// 			t.Error("Test_GetGroupWaterTank_Get() should report an error, but it haven't")
+// 			t.Error("Test_GetGroupTank_Get() should report an error, but it haven't")
 // 		}
 
-// 		if err.LastUsecaseError().Error() != ErrWaterTankErrorServerError(errors.New("ERROR").Error()).Error() {
-// 			t.Errorf("Test_GetGroupWaterTank_Get() wrong error. Should return '%s', got '%s'", ErrWaterTankErrorServerError(errors.New("ERROR").Error()), err.LastUsecaseError())
+// 		if err.LastUsecaseError().Error() != ErrTankErrorServerError(errors.New("ERROR").Error()).Error() {
+// 			t.Errorf("Test_GetGroupTank_Get() wrong error. Should return '%s', got '%s'", ErrTankErrorServerError(errors.New("ERROR").Error()), err.LastUsecaseError())
 // 		}
 // 	})
 // }

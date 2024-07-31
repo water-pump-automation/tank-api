@@ -14,7 +14,7 @@ const UpdateTankSchemaLoader = `
 			"type": "string",
 			"format": "name_match"
 		},
-		"water_level": {
+		"level": {
 			"type": "number",
 			"minimum": 0,
             "exclusiveMinimum": true
@@ -24,7 +24,7 @@ const UpdateTankSchemaLoader = `
 	"required": [
 		"group",
 		"tank_name",
-		"water_level"
+		"level"
 	]
 }
 `

@@ -6,10 +6,10 @@ import (
 )
 
 var (
-	ErrWaterTankCurrentWaterLevelSmallerThanZero = errors.New("invalid water level. Smaller than 0")
-	ErrWaterTankCurrentWaterLevelBiggerThanMax   = errors.New("invalid water level. Bigger than maximum capacity")
-	ErrWaterTankErrorNotFound                    = errors.New("didn't found tank")
-	ErrWaterTankErrorServerError                 = func(errorMsg string) error {
+	ErrTankCurrentLevelSmallerThanZero = errors.New("invalid  level. Smaller than 0")
+	ErrTankCurrentLevelBiggerThanMax   = errors.New("invalid  level. Bigger than maximum capacity")
+	ErrTankErrorNotFound               = errors.New("didn't found tank")
+	ErrTankErrorServerError            = func(errorMsg string) error {
 		return fmt.Errorf("server error: %s", errorMsg)
 	}
 )
