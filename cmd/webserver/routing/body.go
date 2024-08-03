@@ -20,8 +20,7 @@ func writeBadRequestError(writer http.ResponseWriter, err error) {
 	if err != nil {
 		return
 	}
-	writer.WriteHeader(http.StatusBadRequest)
-	writer.Write(errorBody)
+	http.Error(writer, string(errorBody), http.StatusBadRequest)
 }
 
 func getBody(writer http.ResponseWriter, request *http.Request) (map[string]interface{}, error) {
